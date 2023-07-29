@@ -133,13 +133,13 @@ class TitleBar(QWidget):
         self.layout.setSpacing(0)
 
         self.title_label = QLabel("BOMBA MENU", self)
-        self.title_label.setStyleSheet("color: white; font-size: 18px; padding-left: 10px;")
+        self.title_label.setStyleSheet("color: black; font-size: 18px; padding-left: 10px;")
 
         self.close_button = QPushButton("×", self)
         self.close_button.setStyleSheet("""
             QPushButton {
                 background-color: transparent;
-                color: white;
+                color: black;
                 font-size: 20px;
                 width: 30px;
                 height: 30px;
@@ -169,6 +169,15 @@ class TitleBar(QWidget):
         if event.button() == Qt.LeftButton and hasattr(self, 'drag_start_position'):
             del self.drag_start_position
 
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setPen(QPen(Qt.black, 1))  # Set border color and thickness
+
+        # Draw the border around all sides of the widget
+        painter.drawRect(0, 0, self.width()-1, self.height()-1)
+
+        painter.end()
+        
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QPushButton
 )
@@ -194,11 +203,18 @@ class OptionsMenu(QWidget):
         self.title_bar = TitleBar(self)
         layout.addWidget(self.title_bar)
 
-        # Theme Button
-        self.theme_button = QPushButton("Night Theme")
-        self.theme_button.clicked.connect(self.toggle_theme)
-        self.theme_button.setStyleSheet(
-            "QPushButton { background-color: #007BFF; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #0056b3; }"
+        # Apply Button
+        self.apply_button = QPushButton("Apply")
+        self.apply_button.clicked.connect(self.apply_changes)
+        self.apply_button.setStyleSheet(
+            "QPushButton { background-color: #505954; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 50px; } QPushButton:hover { background-color: #303532; }"
+        )
+
+        # Night/Day Theme Button
+        self.night_day_button = QPushButton("Night")
+        self.night_day_button.clicked.connect(self.toggle_night_day_theme)
+        self.night_day_button.setStyleSheet(
+            "QPushButton { background-color: #A1B3A8; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 80px; } QPushButton:hover { background-color: #808f86; }"
         )
 
         # Crosshair Diameter
@@ -209,17 +225,10 @@ class OptionsMenu(QWidget):
         )
 
         # Vertical Adjust
-        vertical_adjust_label = QLabel("Lower the crosshair position in bomba pixels")
+        vertical_adjust_label = QLabel("Adjust the crosshair position in bomba pixels")
         self.vertical_adjust_input = QLineEdit(str(0))
         self.vertical_adjust_input.setStyleSheet(
             "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 5px; padding: 5px; }"
-        )
-
-        # Apply Button
-        self.apply_button = QPushButton("Apply")
-        self.apply_button.clicked.connect(self.apply_changes)
-        self.apply_button.setStyleSheet(
-            "QPushButton { background-color: #007BFF; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 80px; } QPushButton:hover { background-color: #0056b3; }"
         )
 
         # Transparency Slider
@@ -233,19 +242,17 @@ class OptionsMenu(QWidget):
             "QSlider::groove:horizontal { height: 6px; background: #ccc; border-radius: 3px; } QSlider::handle:horizontal { width: 16px; height: 16px; margin: -5px 0; background: #007BFF; border: 2px solid #0056b3; border-radius: 8px; }"
         )
 
+        # Create a horizontal layout for the buttons
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.night_day_button)
+        button_layout.addWidget(self.apply_button)
+
         # Add widgets to the layout
-        layout.addWidget(self.theme_button)
+        layout.addLayout(button_layout)
         layout.addWidget(diameter_label)
         layout.addWidget(self.diameter_input)
         layout.addWidget(vertical_adjust_label)
         layout.addWidget(self.vertical_adjust_input)
-
-        # Create a horizontal layout for the buttons
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.apply_button)
-        button_layout.addStretch()
-
-        layout.addLayout(button_layout)
         layout.addWidget(alpha_label)
         layout.addWidget(self.alpha_slider)
         layout.addStretch()
@@ -274,7 +281,7 @@ class OptionsMenu(QWidget):
         self.crosshair.set_transparency(self.crosshair.alpha)
         self.crosshair.repaint()
 
-    def toggle_theme(self):
+    def toggle_night_day_theme(self):
         if self.is_night_theme:
             self.set_day_theme()
         else:
@@ -284,171 +291,16 @@ class OptionsMenu(QWidget):
         self.setStyleSheet(
             "OptionsMenu { background-color: #f5f5f5; } QLabel, QLineEdit { color: #333; } QPushButton { background-color: #007BFF; color: #fff; }"
         )
-        self.theme_button.setText("Night Theme")
+        self.night_day_button.setText("Night")
         self.is_night_theme = False
 
     def set_night_theme(self):
         self.setStyleSheet(
             "OptionsMenu { background-color: #303030; } QLabel, QLineEdit { color: #f0f0f0; } QPushButton { background-color: #212121; color: #fff; }"
         )
-        self.theme_button.setText("Day Theme")
+        self.night_day_button.setText("Day")
         self.is_night_theme = True
-
-        
-def main():
-    app = QApplication(sys.argv)
-
-    crosshair_app = CrosshairApp()
-
-    options_menu = OptionsMenu(crosshair_app)
-    options_menu.show()
-
-    sys.exit(app.exec_())
-
-if __name__ == "__main__":
-    main()
-
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.drag_position = event.globalPos() - self.parent().pos()
-            event.accept()
-
-    def mouseMoveEvent(self, event):
-        if hasattr(self, 'drag_position'):
-            self.parent().move(event.globalPos() - self.drag_position)
-            event.accept()
-
-    def mouseReleaseEvent(self, event):
-        if hasattr(self, 'drag_position'):
-            del self.drag_position
-
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QPushButton
-)
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen
-
-class OptionsMenu(QWidget):
-    def __init__(self, crosshair):
-        super().__init__()
-        self.crosshair = crosshair
-        self.is_night_theme = False  # We start with the day theme
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle("BOMBA MENU")
-        self.setGeometry(100, 100, 300, 200)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-
-        # Main layout
-        layout = QVBoxLayout()
-
-        # Title Bar
-        self.title_bar = TitleBar(self)
-        layout.addWidget(self.title_bar)
-
-        # Theme Button
-        self.theme_button = QPushButton("Night Theme")
-        self.theme_button.clicked.connect(self.toggle_theme)
-        self.theme_button.setStyleSheet(
-            "QPushButton { background-color: #007BFF; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #0056b3; }"
-        )
-
-        # Crosshair Diameter
-        diameter_label = QLabel("Bomba the diameter of the crosshair in pixels:")
-        self.diameter_input = QLineEdit(str(self.crosshair.diameter))
-        self.diameter_input.setStyleSheet(
-            "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 5px; padding: 5px; }"
-        )
-
-        # Vertical Adjust
-        vertical_adjust_label = QLabel("Lower the crosshair position in bomba pixels")
-        self.vertical_adjust_input = QLineEdit(str(0))
-        self.vertical_adjust_input.setStyleSheet(
-            "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 5px; padding: 5px; }"
-        )
-
-        # Apply Button
-        self.apply_button = QPushButton("Apply")
-        self.apply_button.clicked.connect(self.apply_changes)
-        self.apply_button.setStyleSheet(
-            "QPushButton { background-color: #007BFF; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 80px; } QPushButton:hover { background-color: #0056b3; }"
-        )
-
-        # Transparency Slider
-        alpha_label = QLabel("Hide your bomba? (0 to 1)")
-        self.alpha_slider = QSlider(Qt.Horizontal)
-        self.alpha_slider.setMinimum(0)
-        self.alpha_slider.setMaximum(100)
-        self.alpha_slider.setValue(int(self.crosshair.alpha * 100))
-        self.alpha_slider.valueChanged.connect(self.update_alpha)
-        self.alpha_slider.setStyleSheet(
-            "QSlider::groove:horizontal { height: 6px; background: #ccc; border-radius: 3px; } QSlider::handle:horizontal { width: 16px; height: 16px; margin: -5px 0; background: #007BFF; border: 2px solid #0056b3; border-radius: 8px; }"
-        )
-
-        # Add widgets to the layout
-        layout.addWidget(self.theme_button)
-        layout.addWidget(diameter_label)
-        layout.addWidget(self.diameter_input)
-        layout.addWidget(vertical_adjust_label)
-        layout.addWidget(self.vertical_adjust_input)
-
-        # Create a horizontal layout for the buttons
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.apply_button)
-        button_layout.addStretch()
-
-        layout.addLayout(button_layout)
-        layout.addWidget(alpha_label)
-        layout.addWidget(self.alpha_slider)
-        layout.addStretch()
-
-        self.setLayout(layout)
-        self.set_day_theme()  # Start with the day theme
-
-    def apply_changes(self):
-        diameter_text = self.diameter_input.text()
-        vertical_adjust_text = self.vertical_adjust_input.text()
-
-        try:
-            diameter = int(diameter_text)
-            vertical_adjust = int(vertical_adjust_text)
-            self.crosshair.update_diameter(diameter)
-
-            self.crosshair.new_window_y += vertical_adjust
-            self.crosshair.setGeometry(self.crosshair.new_window_x, self.crosshair.new_window_y,
-                                       self.crosshair.window_width, self.crosshair.window_height)
-
-        except ValueError:
-            pass
-
-    def update_alpha(self, value):
-        self.crosshair.alpha = value / 100.0
-        self.crosshair.set_transparency(self.crosshair.alpha)
-        self.crosshair.repaint()
-
-    def toggle_theme(self):
-        if self.is_night_theme:
-            self.set_day_theme()
-        else:
-            self.set_night_theme()
-
-    def set_day_theme(self):
-        self.setStyleSheet(
-            "OptionsMenu { background-color: #f5f5f5; } QLabel, QLineEdit { color: #333; } QPushButton { background-color: #007BFF; color: #fff; }"
-        )
-        self.theme_button.setText("Night Theme")
-        self.is_night_theme = False
-
-    def set_night_theme(self):
-        self.setStyleSheet(
-            "OptionsMenu { background-color: #303030; } QLabel, QLineEdit { color: #f0f0f0; } QPushButton { background-color: #212121; color: #fff; }"
-        )
-        self.theme_button.setText("Day Theme")
-        self.is_night_theme = True
-
-        
+    
 def main():
     app = QApplication(sys.argv)
 
