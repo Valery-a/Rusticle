@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QFormLayout, QDialog, QFrame, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QMainWindow, QPushButton
-from PyQt5.QtCore import Qt, pyqtSignal, QPoint
+from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QRect
 from PyQt5.QtGui import QPainter, QPen, QColor
 
 class CrosshairApp(QMainWindow):
@@ -40,11 +40,16 @@ class CrosshairApp(QMainWindow):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        painter.setPen(QPen(self.crosshair_color, 2))
-
         center_x = self.width() // 2
         center_y = self.height() // 2
         half_line = self.diameter // 2
+        bounding_rect = QRect(center_x - half_line, center_y - half_line, self.diameter, self.diameter)
+
+        if self.is_outline_border:
+            painter.setPen(QPen(Qt.black, 4))
+            painter.drawRect(bounding_rect.adjusted(-2, -2, 2, 2))
+
+        painter.setPen(QPen(self.crosshair_color, 2))
 
         if self.crosshair_shape == "1":  # circle
             painter.drawEllipse(center_x - half_line, center_y - half_line, self.diameter, self.diameter)
@@ -82,7 +87,7 @@ class CrosshairApp(QMainWindow):
         else:
             painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
             painter.drawLine(center_x - half_line, center_y, center_x + half_line, center_y)
-        
+
         painter.end()
 
     def set_crosshair_color(self, color):
@@ -354,7 +359,7 @@ class AdvancedOptionsDialog(QDialog):
 
         layout.addLayout(form_layout)
 
-        # Add/Remove Outline Border
+       # Add/Remove Outline Border
         self.outline_border_button = QPushButton("Add Outline Border")
         self.outline_border_button.clicked.connect(self.toggle_outline_border)
         layout.addWidget(self.outline_border_button)
