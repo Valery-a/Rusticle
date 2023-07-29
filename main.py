@@ -1,7 +1,7 @@
 import sys
 import json
 import os
-from PyQt5.QtWidgets import QApplication, QFormLayout, QDialog, QFrame, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QMainWindow, QPushButton
+from PyQt5.QtWidgets import QApplication, QGridLayout, QComboBox, QFormLayout, QDialog, QFrame, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QMainWindow, QPushButton
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QRect
 from PyQt5.QtGui import QPainter, QPen, QColor
 
@@ -133,7 +133,7 @@ class OptionsMenu(QFrame):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(2, 2, 2, 2)
 
-        self.setWindowTitle("BOMBA MENU")
+        self.setWindowTitle("RustOracle")
         self.setGeometry(100, 100, 300, 200)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 
@@ -159,7 +159,7 @@ class OptionsMenu(QFrame):
             "QPushButton { background-color: #A1B3A8; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 80px; } QPushButton:hover { background-color: #808f86; }"
         )
 
-        diameter_label = QLabel("Bomba the diameter of the crosshair in pixels:")
+        diameter_label = QLabel("Change the diameter of the crosshair in pixels:")
         self.diameter_input = QLineEdit(str(self.crosshair.diameter))
         self.diameter_input.setStyleSheet(
             "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 5px; padding: 5px; }"
@@ -171,7 +171,7 @@ class OptionsMenu(QFrame):
             "QPushButton { background-color: #707d75; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #606b64; }"
         )
 
-        vertical_adjust_label = QLabel("Adjust the crosshair position in bomba pixels")
+        vertical_adjust_label = QLabel("Adjust the crosshair position in pixels")
         self.vertical_adjust_input = QLineEdit(str(0))
         self.vertical_adjust_input.setStyleSheet(
             "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 5px; padding: 5px; }"
@@ -179,7 +179,7 @@ class OptionsMenu(QFrame):
         layout.addWidget(vertical_adjust_label)
         layout.addWidget(self.vertical_adjust_input)
 
-        alpha_label = QLabel("Hide your bomba? (0 to 1)")
+        alpha_label = QLabel("Adjust the transparency of the crosshair: (0 to 1)")
         self.alpha_slider = QSlider(Qt.Horizontal)
         self.alpha_slider.setMinimum(0)
         self.alpha_slider.setMaximum(100)
@@ -343,22 +343,112 @@ class OptionsMenu(QFrame):
 class CalculatorDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle("Calculator")
-        self.setGeometry(400, 400, 300, 200)
+        self.setWindowTitle("Rust Raid Cost Calculator")
+        self.setGeometry(0, 0, 400, 150)  # Adjust size if needed
 
         layout = QVBoxLayout()
-
-        label = QLabel("Calculator Window Content Goes Here", self)
-        layout.addWidget(label)
-
-        close_button = QPushButton("Close")
-        close_button.clicked.connect(self.close)
-        layout.addWidget(close_button)
-
         self.setLayout(layout)
+
+        grid_layout = QGridLayout()
+
+        # Tool Selection Section
+        grid_layout.addWidget(QLabel("Select a tool:"), 0, 0)
+        self.tool_type_combo = QComboBox()
+        self.tool_type_combo.addItems(["C4", "Rocket"])  # Add more tools if needed
+        grid_layout.addWidget(self.tool_type_combo, 0, 1)
+
+        grid_layout.addWidget(QLabel("Enter the quantity:"), 1, 0)
+        self.quantity_input = QLineEdit("1")
+        grid_layout.addWidget(self.quantity_input, 1, 1)
+
+        calculate_tool_button = QPushButton("Calculate Tool Cost")
+        calculate_tool_button.clicked.connect(self.calculate_tool_cost)
+        grid_layout.addWidget(calculate_tool_button, 2, 0, 1, 2)  # Span 2 columns
+
+        # Wall Selection Section
+        grid_layout.addWidget(QLabel("Select a wall:"), 3, 0)
+        self.wall_type_combo = QComboBox()
+        self.wall_type_combo.addItems([
+            "Twig Wall", "Wooden Wall", "Stone Wall", "Metal Wall", "Armored Wall"
+        ])  # Add more walls if needed
+        grid_layout.addWidget(self.wall_type_combo, 3, 1)
+
+        calculate_wall_button = QPushButton("Calculate Wall Info")
+        calculate_wall_button.clicked.connect(self.calculate_wall_info)
+        grid_layout.addWidget(calculate_wall_button, 4, 0, 1, 2)  # Span 2 columns
+
+        # New Result Label
+        grid_layout.addWidget(QLabel("Result:"), 5, 0)
+        self.result_label = QLabel()
+        grid_layout.addWidget(self.result_label, 5, 1)
+
+        layout.addLayout(grid_layout)
+
+    def calculate_tool_cost(self):
+        selected_tool = self.tool_type_combo.currentText()
+        quantity = int(self.quantity_input.text())
+
+        # Dictionary containing information about each tool
+        tools_info = {
+            "C4": {"sulfur": 2200, "charcoal": 3000},
+            "Rocket": {"sulfur": 1400, "charcoal": 1950},
+            # Add more tools if needed
+        }
+
+        if selected_tool in tools_info:
+            sulfur_cost = tools_info[selected_tool]["sulfur"] * quantity
+            charcoal_cost = tools_info[selected_tool]["charcoal"] * quantity
+
+            result_text = (
+                f"{selected_tool} x {quantity}:\n"
+                f"Sulfur Cost: {sulfur_cost}\n"
+                f"Charcoal Cost: {charcoal_cost}"
+            )
+            self.result_label.setText(result_text)
+        else:
+            self.result_label.setText("Invalid tool selection.")
+
+    def calculate_wall_info(self):
+        selected_wall = self.wall_type_combo.currentText()
+
+        # Dictionary containing information about each wall type
+        walls_info = {
+            "Twig Wall": {
+                "HP": 10,
+                "Cost": "Wood×10 (10)",
+                "Destroying Costs": "Explosive 5.56 Rifle Ammo×2 (1 sec, Sulfur Amount×50)\nF1 Grenade×1 (4 sec, Sulfur Amount×60)\nBeancan Grenade×1 (6 sec, Sulfur Amount×120)\nHigh Velocity Rocket×1 (1 sec, Sulfur Amount×200)\nSatchel Charge×1 (9 sec, Sulfur Amount×480)\nIncendiary Rocket×1 (1 sec, Sulfur Amount×610)\nRocket×1 (1 sec, Sulfur Amount×1,400)\nTimed Explosive Charge×1 (10 sec, Sulfur Amount×2,200)"
+            },
+            "Wooden Wall": {
+                "HP": 250,
+                "Cost": "Wood×200 (250)",
+                "Destroying Costs": "Incendiary Rocket×1 (20 sec, Sulfur Amount×253)\nExplosive 5.56 Rifle Ammo×1 (21 sec, Sulfur Amount×1,225)\nSatchel Charge×3 (12 sec, Sulfur Amount×1,440)\nBeancan Grenade×1 (51 sec, Sulfur Amount×1,560)\nHigh Velocity Rocket×9 (48 sec, Sulfur Amount×1,800)\nTimed Explosive Charge×1 (10 sec, Sulfur Amount×2,200)\nRocket×2 (6 sec, Sulfur Amount×2,800)\nF1 Grenade×1 (2 min 29 sec, Sulfur Amount×3,540)\nFlame Thrower×~ 206 (44 sec, Fuel Amount×206)\nMolotov Cocktail×~ 4 (21 sec, Fuel Amount×200)"
+            },
+            "Stone Wall": {
+                "HP": 500,
+                "Cost": "Stones×300 (500)",
+                "Destroying Costs": "Timed Explosive Charge×2 (11 sec, Sulfur Amount×4,400)\nExplosive 5.56 Rifle Ammo×1 (1 min 18 sec, Sulfur Amount×4,625)\nSatchel Charge×10 (22 sec, Sulfur Amount×4,800)\nBeancan Grenade×1 (2 min 55 sec, Sulfur Amount×5,520)\nRocket×4 (18 sec, Sulfur Amount×5,600)\nHigh Velocity Rocket×32 (3 min 6 sec, Sulfur Amount×6,400)\nF1 Grenade×1 (7 min 36 sec, Sulfur Amount×10,920)"
+            },
+            "Metal Wall": {
+                "HP": 1000,
+                "Cost": "Metal Fragments×200 (1000)",
+                "Destroying Costs": "Timed Explosive Charge×4 (14 sec, Sulfur Amount×8,800)\nExplosive 5.56 Rifle Ammo×1 (2 min 51 sec, Sulfur Amount×10,000)\nSatchel Charge×23 (42 sec, Sulfur Amount×11,040)\nRocket×8 (42 sec, Sulfur Amount×11,200)\nHigh Velocity Rocket×67 (6 min 36 sec, Sulfur Amount×13,400)\nBeancan Grenade×1 (7 min 2 sec, Sulfur Amount×13,440)\nF1 Grenade×1 (41 min 24 sec, Sulfur Amount×59,580)"
+            },
+            "Armored Wall": {
+                "HP": 2000,
+                "Cost": "High Quality Metal×25 (2000)",
+                "Destroying Costs": "Timed Explosive Charge×8 (20 sec, Sulfur Amount×17,600)\nExplosive 5.56 Rifle Ammo×799 (5 min 46 sec, Sulfur Amount×19,975)\nRocket×15 (1 min 24 sec, Sulfur Amount×21,000)\nSatchel Charge×46 (1 min 16 sec, Sulfur Amount×22,080)\nBeancan Grenade×223 (13 min 58 sec, Sulfur Amount×26,760)\nHigh Velocity Rocket×134 (13 min 18 sec, Sulfur Amount×26,800)\nF1 Grenade×1,986 (1 hour 22 min 46 sec, Sulfur Amount×119,160)"
+            }
+        }
+        if selected_wall in walls_info:
+            wall_hp = walls_info[selected_wall]["HP"]
+            wall_cost = walls_info[selected_wall]["Cost"]
+            destroying_costs = walls_info[selected_wall]["Destroying Costs"]
+
+            result_text = f"{selected_wall}:\nHP: {wall_hp}\nCost: {wall_cost}\n\nDestroying Costs:\n{destroying_costs}"
+            self.result_label.setText(result_text)
+        else:
+            self.result_label.setText("Invalid wall type.")
+
 
 
 class TitleBar(QWidget):
@@ -370,7 +460,7 @@ class TitleBar(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
 
-        self.title_label = QLabel("BOMBA MENU", self)
+        self.title_label = QLabel("RustOracle", self)
         self.title_label.setStyleSheet("color: black; font-size: 18px; padding-left: 10px;")
 
         self.close_button = QPushButton("×", self)
