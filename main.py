@@ -26,9 +26,47 @@ class CrosshairApp(QMainWindow):
         painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
         painter.drawLine(center_x - half_line, center_y, center_x + half_line, center_y)
 
+class OptionsMenu(QWidget):
+    def __init__(self, crosshair):
+        super().__init__()
+        self.crosshair = crosshair
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Crosshair Options")
+        self.setGeometry(100, 100, 300, 200)
+
+        diameter_label = QLabel("Crosshair Diameter:")
+        self.diameter_input = QLineEdit(str(self.crosshair.diameter))
+
+        alpha_label = QLabel("Crosshair Transparency:")
+        self.alpha_input = QLineEdit(str(self.crosshair.alpha))
+
+        apply_button = QPushButton("Apply")
+        apply_button.clicked.connect(self.apply_changes)
+
+        layout = QVBoxLayout()
+        layout.addWidget(diameter_label)
+        layout.addWidget(self.diameter_input)
+        layout.addWidget(alpha_label)
+        layout.addWidget(self.alpha_input)
+        layout.addWidget(apply_button)
+        layout.addStretch()
+
+        self.setLayout(layout)
+
+    def apply_changes(self):
+        try:
+            diameter = int(self.diameter_input.text())
+            alpha = float(self.alpha_input.text())
+        except ValueError:
+            pass
+
 def main():
     app = QApplication(sys.argv)
     crosshair_app = CrosshairApp()
+    options_menu = OptionsMenu(crosshair_app)
+    options_menu.show()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
