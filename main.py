@@ -42,7 +42,7 @@ class CrosshairApp(QMainWindow):
 
         self.new_window_x = screen_center_x - self.window_width // 2
         self.new_window_y = screen_center_y - self.window_height // 2 - title_bar_height // 2
-
+    
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -189,6 +189,14 @@ class OptionsMenu(QFrame):
             "QSlider::groove:horizontal { height: 6px; background: #ccc; border-radius: 3px; } QSlider::handle:horizontal { width: 16px; height: 16px; margin: -5px 0; background: #a5aad9; border: 2px solid #a5aad9; border-radius: 8px; }"
         )
 
+        self.calculator_button = QPushButton("CALCULATOR")
+        self.calculator_button.clicked.connect(self.open_calculator)
+        self.calculator_button.setStyleSheet(
+            "QPushButton { background-color: #70ad47; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #548235; }"
+        )
+
+
+
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.night_day_button)
         button_layout.addWidget(self.apply_button)
@@ -201,6 +209,7 @@ class OptionsMenu(QFrame):
         layout.addWidget(self.vertical_adjust_input)
         layout.addWidget(alpha_label)
         layout.addWidget(self.alpha_slider)
+        layout.addWidget(self.calculator_button)
         layout.addStretch()
 
         self.setLayout(layout)
@@ -222,6 +231,11 @@ class OptionsMenu(QFrame):
         )
         
         self.set_day_theme()
+
+    def open_calculator(self):
+        calculator_dialog = CalculatorDialog(self)
+        calculator_dialog.setModal(True)
+        calculator_dialog.exec_()
 
     def save_settings(self):
         # Gather the settings to save
@@ -325,6 +339,27 @@ class OptionsMenu(QFrame):
         )
         self.night_day_button.setText("Day")
         self.is_night_theme = True
+
+class CalculatorDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Calculator")
+        self.setGeometry(400, 400, 300, 200)
+
+        layout = QVBoxLayout()
+
+        label = QLabel("Calculator Window Content Goes Here", self)
+        layout.addWidget(label)
+
+        close_button = QPushButton("Close")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
+
 
 class TitleBar(QWidget):
     def __init__(self, parent):
