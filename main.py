@@ -224,7 +224,7 @@ class OptionsMenu(QFrame):
             "QPushButton { background-color: #A1B3A8; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 80px; } QPushButton:hover { background-color: #808f86; }"
         )
 
-        # Crosshair Diameter
+       # Crosshair Diameter
         diameter_label = QLabel("Bomba the diameter of the crosshair in pixels:")
         self.diameter_input = QLineEdit(str(self.crosshair.diameter))
         self.diameter_input.setStyleSheet(
@@ -235,7 +235,7 @@ class OptionsMenu(QFrame):
         self.advanced_options_button = QPushButton("Advanced Options")
         self.advanced_options_button.clicked.connect(self.open_advanced_options)
         self.advanced_options_button.setStyleSheet(
-            "QPushButton { background-color: #007BFF; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #0056b3; }"
+            "QPushButton { background-color: #707d75; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #606b64; }"
         )
 
         # Vertical Adjust
@@ -275,7 +275,19 @@ class OptionsMenu(QFrame):
         self.setLayout(layout)
 
         self.setStyleSheet(
-            "OptionsMenu { background-color: #f5f5f5; border: 1px solid #ccc; } QLabel, QLineEdit { color: #333; } QPushButton { background-color: #007BFF; color: #fff; }"
+            """
+            OptionsMenu {
+                background-color: #f5f5f5;
+                border: 1px solid #ccc;
+            }
+            QLabel, QLineEdit {
+                color: #333;
+            }
+            QPushButton {
+                background-color: #007BFF;
+                color: #fff;
+            }
+            """
         )
 
         self.set_day_theme()
