@@ -1,8 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QMainWindow, QPushButton
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtCore import Qt, QPoint, pyqtSignal
+from PyQt5.QtGui import QPainter, QPen
 
 class CrosshairApp(QMainWindow):
     diameterChanged = pyqtSignal(int)
@@ -37,15 +36,14 @@ class CrosshairApp(QMainWindow):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
+        
         painter.setPen(QPen(Qt.white, 2))
-
+        
         center_x = self.width() // 2
         center_y = self.height() // 2
         half_line = self.diameter // 2
 
         painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
-
-
         painter.drawLine(center_x - half_line, center_y, center_x + half_line, center_y)
 
         painter.end()
@@ -142,6 +140,24 @@ class OptionsMenu(QWidget):
             """
         )
 
+        self.theme_button = QPushButton("Night Bomba")
+        self.theme_button.clicked.connect(self.toggle_theme)
+        self.theme_button.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #007BFF;
+                color: #fff;
+                border: 2px solid #0056b3;
+                border-radius: 5px;
+                padding: 5px;
+            }
+
+            QPushButton:hover {
+                background-color: #0056b3;
+            }
+            """
+        )
+
         layout = QVBoxLayout()
         layout.addWidget(diameter_label)
         layout.addWidget(self.diameter_input)
@@ -150,9 +166,11 @@ class OptionsMenu(QWidget):
         layout.addWidget(self.apply_button)
         layout.addWidget(alpha_label)
         layout.addWidget(self.alpha_slider)
+        layout.addWidget(self.theme_button)
         layout.addStretch()
 
         self.setLayout(layout)
+        self.toggle_theme()
 
     def apply_changes(self):
         diameter_text = self.diameter_input.text()
@@ -174,6 +192,33 @@ class OptionsMenu(QWidget):
         self.crosshair.alpha = value / 100.0
         self.crosshair.set_transparency(self.crosshair.alpha)
         self.crosshair.repaint()
+
+    def toggle_theme(self):
+        if self.theme_button.text() == "Night Bomba":
+            self.set_dark_theme()
+        else:
+            self.set_light_theme()
+
+    def set_dark_theme(self):
+        self.setStyleSheet(
+            """
+            OptionsMenu {
+                background-color: #333;
+            }
+            QLabel, QLineEdit {
+                color: #fff;
+            }
+            QPushButton {
+                background-color: #007BFF;
+                color: #fff;
+            }
+            """
+        )
+        self.theme_button.setText("Day Bomba")
+
+    def set_light_theme(self):
+        self.setStyleSheet("")
+        self.theme_button.setText("Night Bomba")
 
 def main():
     app = QApplication(sys.argv)
