@@ -143,20 +143,20 @@ class OptionsMenu(QFrame):
         self.config_save_button = QPushButton("Config Save")
         self.config_save_button.clicked.connect(self.save_settings)
         self.config_save_button.setStyleSheet(
-            "QPushButton { background-color: #FF9900; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #FF6600; }"
+            "QPushButton { background-color: #FF9900; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #FF6600; }"
         )
         layout.addWidget(self.config_save_button)
 
         self.apply_button = QPushButton("Apply")
         self.apply_button.clicked.connect(self.apply_changes)
         self.apply_button.setStyleSheet(
-            "QPushButton { background-color: #505954; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 50px; } QPushButton:hover { background-color: #303532; }"
+            "QPushButton { background-color: #FFA500; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 50px; } QPushButton:hover { background-color: #FF6600; }"
         )
 
         self.night_day_button = QPushButton("Night")
         self.night_day_button.clicked.connect(self.toggle_night_day_theme)
         self.night_day_button.setStyleSheet(
-            "QPushButton { background-color: #A1B3A8; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 80px; } QPushButton:hover { background-color: #808f86; }"
+            "QPushButton { background-color: #A1B3A8; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 80px; } QPushButton:hover { background-color: #808f86; }"
         )
 
         diameter_label = QLabel("Bomba the diameter of the crosshair in pixels:")
@@ -168,7 +168,7 @@ class OptionsMenu(QFrame):
         self.advanced_options_button = QPushButton("Advanced Options")
         self.advanced_options_button.clicked.connect(self.open_advanced_options)
         self.advanced_options_button.setStyleSheet(
-            "QPushButton { background-color: #707d75; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #606b64; }"
+            "QPushButton { background-color: #707d75; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #606b64; }"
         )
 
         vertical_adjust_label = QLabel("Adjust the crosshair position in bomba pixels")
