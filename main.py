@@ -1,70 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QMainWindow, QPushButton
+from PyQt5.QtWidgets import QApplication, QFrame, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QMainWindow, QPushButton
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen
-
-class CrosshairApp(QMainWindow):
-    diameterChanged = pyqtSignal(int)
-
-    def __init__(self):
-        super().__init__()
-        self.diameter = 50
-        self.alpha = 0.5
-        self.initUI()
-
-    def initUI(self):
-        self.setAttribute(Qt.WA_TranslucentBackground, True)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowTransparentForInput)
-
-        self.center_crosshair()
-        self.setGeometry(self.new_window_x, self.new_window_y, self.window_width, self.window_height)
-        self.show()
-
-    def center_crosshair(self):
-        screen_geometry = QApplication.desktop().availableGeometry()
-        screen_center_x = screen_geometry.x() + screen_geometry.width() // 2
-        screen_center_y = screen_geometry.y() + screen_geometry.height() // 2
-
-        title_bar_height = self.frameGeometry().height() - self.geometry().height()
-
-        self.window_width = self.geometry().width()
-        self.window_height = self.geometry().height()
-
-        self.new_window_x = screen_center_x - self.window_width // 2
-        self.new_window_y = screen_center_y - self.window_height // 2 - title_bar_height // 2
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        painter.setPen(QPen(Qt.white, 2))
-
-        center_x = self.width() // 2
-        center_y = self.height() // 2
-        half_line = self.diameter // 2
-
-        painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
-        painter.drawLine(center_x - half_line, center_y, center_x + half_line, center_y)
-
-        painter.end()
-
-    def set_transparency(self, alpha):
-        self.setWindowOpacity(alpha)
-
-    def update_diameter(self, diameter):
-        try:
-            self.diameter = diameter
-            self.center_crosshair()
-            self.repaint()
-            self.diameterChanged.emit(diameter)
-        except ValueError:
-            pass
-
-class TitleBar(QWidget):
-    import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QMainWindow, QPushButton
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen
+from PyQt5.QtGui import QPainter, QPen, QPainterPath, QRegion
 
 class CrosshairApp(QMainWindow):
     diameterChanged = pyqtSignal(int)
@@ -141,18 +78,41 @@ class TitleBar(QWidget):
                 background-color: transparent;
                 color: black;
                 font-size: 20px;
-                width: 30px;
-                height: 30px;
+                width: 25px;
+                height: 25px;
                 border: none;
                 margin: 0;
             }
             QPushButton:hover {
+                border: 1px solid #ccc; 
+                border-radius: 5px;
                 background-color: #dc3545;
             }
         """)
         self.close_button.clicked.connect(self.parent().close)
 
+        self.minimize_button = QPushButton("–", self)
+        self.minimize_button.setStyleSheet("""
+            QPushButton {
+                background-color: transparent;
+                color: black;
+                font-size: 20px;
+                width: 25px;
+                height: 25px;
+                border: none;
+                margin: 0;
+            }
+            QPushButton:hover {
+                border: 1px solid #ccc; 
+                border-radius: 5px;
+                background-color: #Ffa500
+;
+            }
+        """)
+        self.minimize_button.clicked.connect(self.parent().showMinimized)
+
         self.layout.addWidget(self.title_label, 1, Qt.AlignLeft)
+        self.layout.addWidget(self.minimize_button, 0, Qt.AlignRight)
         self.layout.addWidget(self.close_button, 0, Qt.AlignRight)
 
     def mousePressEvent(self, event):
@@ -171,24 +131,16 @@ class TitleBar(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setPen(QPen(Qt.black, 1))  # Set border color and thickness
-
-        # Draw the border around all sides of the widget
-        painter.drawRect(0, 0, self.width()-1, self.height()-1)
-
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(QPen(Qt.black, 1))
+        painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
         painter.end()
-        
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QPushButton
-)
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen
 
-class OptionsMenu(QWidget):
+class OptionsMenu(QFrame):
     def __init__(self, crosshair):
         super().__init__()
         self.crosshair = crosshair
-        self.is_night_theme = False  # We start with the day theme
+        self.is_night_theme = False
         self.initUI()
 
     def initUI(self):
@@ -197,7 +149,8 @@ class OptionsMenu(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 
         # Main layout
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(2, 2, 2, 2)
 
         # Title Bar
         self.title_bar = TitleBar(self)
@@ -258,7 +211,12 @@ class OptionsMenu(QWidget):
         layout.addStretch()
 
         self.setLayout(layout)
-        self.set_day_theme()  # Start with the day theme
+
+        self.setStyleSheet(
+            "OptionsMenu { background-color: #f5f5f5; border: 1px solid #ccc; } QLabel, QLineEdit { color: #333; } QPushButton { background-color: #007BFF; color: #fff; }"
+        )
+
+        self.set_day_theme()
 
     def apply_changes(self):
         diameter_text = self.diameter_input.text()
@@ -300,7 +258,7 @@ class OptionsMenu(QWidget):
         )
         self.night_day_button.setText("Day")
         self.is_night_theme = True
-    
+
 def main():
     app = QApplication(sys.argv)
 
