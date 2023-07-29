@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QFrame, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QMainWindow, QPushButton
+from PyQt5.QtWidgets import QApplication, QDialog, QFrame, QWidget, QLabel, QLineEdit, QSlider, QVBoxLayout, QHBoxLayout, QMainWindow, QPushButton
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen, QPainterPath, QRegion
+from PyQt5.QtGui import QPainter, QPen, QPainterPath, QRegion, QColor
 
 class CrosshairApp(QMainWindow):
     diameterChanged = pyqtSignal(int)
@@ -11,6 +11,10 @@ class CrosshairApp(QMainWindow):
         self.diameter = 50
         self.alpha = 0.5
         self.initUI()
+        self.crosshair_color = QColor(Qt.white)
+        self.crosshair_shape = "cross"
+        self.is_outline_border = False
+
 
     def initUI(self):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
@@ -37,17 +41,41 @@ class CrosshairApp(QMainWindow):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        painter.setPen(QPen(Qt.white, 2))
+        painter.setPen(QPen(self.crosshair_color, 2))
 
         center_x = self.width() // 2
         center_y = self.height() // 2
         half_line = self.diameter // 2
 
-        painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
-        painter.drawLine(center_x - half_line, center_y, center_x + half_line, center_y)
+        # Set crosshair shape
+        if self.crosshair_shape == "circle":
+            painter.drawEllipse(center_x - half_line, center_y - half_line, self.diameter, self.diameter)
+        elif self.crosshair_shape == "x-mark":
+            painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
+            painter.drawLine(center_x - half_line, center_y, center_x + half_line, center_y)
+        else:  # Default is "cross"
+            painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
+            painter.drawLine(center_x - half_line, center_y, center_x + half_line, center_y)
+
+        # Add outline border if enabled
+        if self.is_outline_border:
+            painter.setPen(QPen(Qt.black, 3))
+            painter.drawRect(center_x - half_line - 1, center_y - half_line - 1, self.diameter + 2, self.diameter + 2)
 
         painter.end()
 
+    def set_crosshair_color(self, color):
+        self.crosshair_color = QColor(color)
+        self.repaint()
+
+    def set_crosshair_shape(self, shape):
+        self.crosshair_shape = shape.lower()
+        self.repaint()
+
+    def toggle_outline_border(self):
+        self.is_outline_border = not self.is_outline_border
+        self.repaint()
+        
     def set_transparency(self, alpha):
         self.setWindowOpacity(alpha)
 
@@ -177,6 +205,13 @@ class OptionsMenu(QFrame):
             "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 5px; padding: 5px; }"
         )
 
+        # Advanced Options Button
+        self.advanced_options_button = QPushButton("Advanced Options")
+        self.advanced_options_button.clicked.connect(self.open_advanced_options)
+        self.advanced_options_button.setStyleSheet(
+            "QPushButton { background-color: #007BFF; color: #fff; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #0056b3; }"
+        )
+
         # Vertical Adjust
         vertical_adjust_label = QLabel("Adjust the crosshair position in bomba pixels")
         self.vertical_adjust_input = QLineEdit(str(0))
@@ -192,7 +227,7 @@ class OptionsMenu(QFrame):
         self.alpha_slider.setValue(int(self.crosshair.alpha * 100))
         self.alpha_slider.valueChanged.connect(self.update_alpha)
         self.alpha_slider.setStyleSheet(
-            "QSlider::groove:horizontal { height: 6px; background: #ccc; border-radius: 3px; } QSlider::handle:horizontal { width: 16px; height: 16px; margin: -5px 0; background: #007BFF; border: 2px solid #0056b3; border-radius: 8px; }"
+            "QSlider::groove:horizontal { height: 6px; background: #ccc; border-radius: 3px; } QSlider::handle:horizontal { width: 16px; height: 16px; margin: -5px 0; background: #a5aad9; border: 2px solid #a5aad9; border-radius: 8px; }"
         )
 
         # Create a horizontal layout for the buttons
@@ -201,6 +236,7 @@ class OptionsMenu(QFrame):
         button_layout.addWidget(self.apply_button)
 
         # Add widgets to the layout
+        layout.addWidget(self.advanced_options_button)
         layout.addLayout(button_layout)
         layout.addWidget(diameter_label)
         layout.addWidget(self.diameter_input)
@@ -233,7 +269,11 @@ class OptionsMenu(QFrame):
 
         except ValueError:
             pass
-
+    
+    def open_advanced_options(self):
+        dialog = AdvancedOptionsDialog(self.crosshair)
+        dialog.exec_()
+    
     def update_alpha(self, value):
         self.crosshair.alpha = value / 100.0
         self.crosshair.set_transparency(self.crosshair.alpha)
@@ -259,6 +299,60 @@ class OptionsMenu(QFrame):
         self.night_day_button.setText("Day")
         self.is_night_theme = True
 
+class AdvancedOptionsDialog(QDialog):
+    def __init__(self, crosshair):
+        super().__init__()
+        self.crosshair = crosshair
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Advanced Options")
+        self.setGeometry(200, 200, 300, 200)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+
+        layout = QVBoxLayout()
+
+        # Crosshair Color
+        color_label = QLabel("Crosshair Color (hex):")
+        self.color_input = QLineEdit("#ffffff")  # Default color is white
+        layout.addWidget(color_label)
+        layout.addWidget(self.color_input)
+
+        # Crosshair Shape
+        shape_label = QLabel("Crosshair Shape (circle, x-mark, cross):")
+        self.shape_input = QLineEdit("cross")  # Default shape is cross
+        layout.addWidget(shape_label)
+        layout.addWidget(self.shape_input)
+
+        # Add/Remove Outline Border
+        self.outline_border_button = QPushButton("Add Outline Border")
+        self.outline_border_button.clicked.connect(self.toggle_outline_border)
+        layout.addWidget(self.outline_border_button)
+
+        # Apply Button
+        apply_button = QPushButton("Apply")
+        apply_button.clicked.connect(self.apply_changes)
+        layout.addWidget(apply_button)
+
+        self.setLayout(layout)
+
+    def apply_changes(self):
+        color = self.color_input.text()
+        shape = self.shape_input.text()
+
+        self.crosshair.set_crosshair_color(color)
+        self.crosshair.set_crosshair_shape(shape)
+
+        self.close()
+
+    def toggle_outline_border(self):
+        if self.crosshair.is_outline_border:
+            self.crosshair.is_outline_border = False
+            self.outline_border_button.setText("Add Outline Border")
+        else:
+            self.crosshair.is_outline_border = True
+            self.outline_border_button.setText("Remove Outline Border")
+        self.crosshair.repaint()
 def main():
     app = QApplication(sys.argv)
 
