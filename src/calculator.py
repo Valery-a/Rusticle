@@ -107,9 +107,14 @@ class CalculatorDialog(QDialog):
             sulfur_cost = tools_info[selected_tool]["sulfur"] * quantity
             charcoal_cost = tools_info[selected_tool]["charcoal"] * quantity
 
+            sulfur_nodes, sulfur_remainder = divmod(sulfur_cost, 300)  # Each node gives 300 sulfur
+
+            if sulfur_remainder > 0:
+                sulfur_nodes += 1
+
             result_text = (
                 f"{selected_tool} x {quantity}:\n"
-                f"Sulfur Cost: {sulfur_cost}\n"
+                f"Sulfur Cost: {sulfur_cost} ({sulfur_nodes} sulfur nodes)\n"
                 f"Charcoal Cost: {charcoal_cost}"
             )
             self.result_label.setText(result_text)
