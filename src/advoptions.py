@@ -11,7 +11,7 @@ class AdvancedOptionsDialog(QDialog):
         self.setWindowTitle("Advanced Options")
         self.setGeometry(200, 200, 300, 200)
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
-        self.setFixedSize(300, 200)
+        self.setFixedSize(300, 300)
 
         layout = QVBoxLayout()
 
