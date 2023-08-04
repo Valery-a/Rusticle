@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QSlider, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame)
+from PyQt5.QtWidgets import (QSlider, QApplication, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame)
 from PyQt5.QtCore import (Qt, QPoint)
 import os, json, webbrowser
 
@@ -195,7 +195,19 @@ class OptionsMenu(QFrame):
         x_offset = self.width() + 100
         y_offset = 100
 
-        dialog.move(options_menu_position + QPoint(x_offset, y_offset))
+        # Calculate the top-left position of the screen
+        screen_top_left = QApplication.desktop().availableGeometry().topLeft()
+
+        # Calculate the desired position for the dialog
+        desired_position = options_menu_position + QPoint(x_offset, y_offset)
+
+        # Ensure the dialog is within the top-left area of the screen
+        if desired_position.x() < screen_top_left.x():
+            desired_position.setX(screen_top_left.x())
+        if desired_position.y() < screen_top_left.y():
+            desired_position.setY(screen_top_left.y())
+
+        dialog.move(desired_position)
         dialog.setModal(True)
         dialog.exec_()
     
