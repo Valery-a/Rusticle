@@ -22,7 +22,7 @@ class AdvancedOptionsDialog(QDialog):
         form_layout.addRow(color_label, self.color_input)
 
         shape_label = QLabel("Crosshair Shape:")
-        self.shape_input = QLineEdit("1-9") 
+        self.shape_input = QLineEdit("1-10") 
         form_layout.addRow(shape_label, self.shape_input)
 
         layout.addLayout(form_layout)

@@ -64,26 +64,36 @@ class CrosshairApp(QMainWindow):
             painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
             painter.drawLine(center_x - half_line, center_y, center_x + half_line, center_y)
         elif self.crosshair_shape == "4":  # gap_cross
+            gap_size = self.diameter // 3
+            painter.drawLine(center_x - half_line, center_y, center_x - gap_size, center_y)
+            painter.drawLine(center_x + gap_size, center_y, center_x + half_line, center_y)
+            painter.drawLine(center_x, center_y - half_line, center_x, center_y - gap_size)
+            painter.drawLine(center_x, center_y + gap_size, center_x, center_y + half_line)
+        elif self.crosshair_shape == "8":  # cross_in_circle
+            painter.drawEllipse(center_x - half_line, center_y - half_line, self.diameter, self.diameter)
+            gap_size = self.diameter // 4
+            painter.drawLine(center_x - gap_size, center_y, center_x + gap_size, center_y)
+            painter.drawLine(center_x, center_y - gap_size, center_x, center_y + gap_size)
+        elif self.crosshair_shape == "7":  # custom
+            gap_size = self.diameter // 3
+            painter.drawLine(center_x - half_line, center_y - gap_size, center_x - half_line, center_y + gap_size)
+            painter.drawLine(center_x + half_line, center_y - gap_size, center_x + half_line, center_y + gap_size)
+            painter.drawLine(center_x - gap_size, center_y - half_line, center_x + gap_size, center_y - half_line)
+            painter.drawLine(center_x - gap_size, center_y + half_line, center_x + gap_size, center_y + half_line)
+        elif self.crosshair_shape == "5":  # cross
+            painter.drawEllipse(center_x, center_y, 1, 1)
+        elif self.crosshair_shape == "6":  # dot
             gap_size = self.diameter // 4
             painter.drawLine(center_x - half_line, center_y, center_x - gap_size, center_y)
             painter.drawLine(center_x + gap_size, center_y, center_x + half_line, center_y)
             painter.drawLine(center_x, center_y - half_line, center_x, center_y - gap_size)
             painter.drawLine(center_x, center_y + gap_size, center_x, center_y + half_line)
-        elif self.crosshair_shape == "5":  # cross_in_circle
-            painter.drawEllipse(center_x - half_line, center_y - half_line, self.diameter, self.diameter)
-            gap_size = self.diameter // 4
-            painter.drawLine(center_x - gap_size, center_y, center_x + gap_size, center_y)
-            painter.drawLine(center_x, center_y - gap_size, center_x, center_y + gap_size)
-        elif self.crosshair_shape == "6":  # custom
-            painter.drawLine(center_x - half_line, center_y - half_line, center_x + half_line, center_y + half_line)
-        elif self.crosshair_shape == "7":  # dot
-            painter.drawEllipse(center_x, center_y, 1, 1)
-        elif self.crosshair_shape == "8":  # diamond
+        elif self.crosshair_shape == "9":  # diamond
             painter.drawLine(center_x, center_y - half_line, center_x + half_line, center_y)
             painter.drawLine(center_x + half_line, center_y, center_x, center_y + half_line)
             painter.drawLine(center_x, center_y + half_line, center_x - half_line, center_y)
             painter.drawLine(center_x - half_line, center_y, center_x, center_y - half_line)
-        elif self.crosshair_shape == "9":  # arrow
+        elif self.crosshair_shape == "10":  # arrow
             arrow_size = self.diameter // 4
             painter.drawLine(center_x, center_y - half_line, center_x, center_y + half_line)
             painter.drawLine(center_x - arrow_size, center_y, center_x, center_y - half_line + arrow_size)
