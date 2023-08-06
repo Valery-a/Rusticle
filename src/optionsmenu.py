@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QSlider, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame
 from PyQt5.QtCore import Qt, QPoint, QTimer
+from PyQt5.QtGui import QMouseEvent
 import os
 import json
 
@@ -58,14 +59,19 @@ class OptionsMenu(QFrame):
         )
 
         self.transparency_button = QPushButton("○ Adjust Transparency ○")
-        self.transparency_button.setCheckable(True)
         self.transparency_button.setStyleSheet(
-            "QPushButton { background-color: #D32F2F; color: #fff; border: none; border-radius: 50px; padding: 10px; min-width: 200px; } QPushButton:checked { background-color: #B71C1C; }"
+            "QPushButton { background-color: #D32F2F; color: #fff; border: none; border-radius: 50px; padding: 10px; min-width: 200px; } QPushButton:pressed { background-color: #B71C1C; }"
         )
         layout.addWidget(self.transparency_button)
 
-        # Connect the button's toggled signal to the transparency adjustment function
-        self.transparency_button.toggled.connect(self.adjust_transparency)
+        # Connect the mousePress and mouseRelease events to corresponding functions
+        self.transparency_button.mousePressEvent = self.mousePressEvent
+        self.transparency_button.mouseReleaseEvent = self.mouseReleaseEvent
+
+        # Variables to track transparency changes
+        self.transparency_timer = None
+        self.transparency_direction = 0  # 0 means increasing, 1 means decreasing
+        self.alpha_increment = 0.01
 
 
         vertical_adjust_label = QLabel("Adjust the crosshair position in pixels")
@@ -215,28 +221,38 @@ class OptionsMenu(QFrame):
         self.crosshair.set_transparency(self.crosshair.alpha)
         self.crosshair.repaint()
 
-    def adjust_transparency(self, checked):
-        if checked:
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.RightButton:
             # Start a timer for decreasing transparency
+            self.transparency_direction = 1  # 1 means decreasing transparency
             self.transparency_timer = QTimer()
             self.transparency_timer.timeout.connect(self.update_transparency)
             self.transparency_timer.start(50)  # Set the timer interval (in milliseconds)
         else:
+            # Pass other mouse press events to the default handler
+            QPushButton.mousePressEvent(self.transparency_button, event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        if event.button() == Qt.RightButton:
             # Start a timer for increasing transparency
+            self.transparency_direction = 0  # 0 means increasing transparency
             self.transparency_timer = QTimer()
             self.transparency_timer.timeout.connect(self.update_transparency)
             self.transparency_timer.start(50)  # Set the timer interval (in milliseconds)
+        else:
+            # Pass other mouse release events to the default handler
+            QPushButton.mouseReleaseEvent(self.transparency_button, event)
 
     def update_transparency(self):
-        if self.transparency_button.isChecked():
+        if self.transparency_direction == 1:
             # Decrease transparency until it reaches 0
-            self.crosshair.alpha -= 0.01
+            self.crosshair.alpha -= self.alpha_increment
             if self.crosshair.alpha < 0:
                 self.crosshair.alpha = 0
                 self.transparency_timer.stop()
         else:
             # Increase transparency until it reaches 1
-            self.crosshair.alpha += 0.01
+            self.crosshair.alpha += self.alpha_increment
             if self.crosshair.alpha > 1:
                 self.crosshair.alpha = 1
                 self.transparency_timer.stop()
