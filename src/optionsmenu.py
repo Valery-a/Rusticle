@@ -1,6 +1,9 @@
 from PyQt5.QtWidgets import QSlider, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame
 from PyQt5.QtCore import Qt, QPoint, QTimer
 from PyQt5.QtGui import QMouseEvent
+import platform
+from pynput.mouse import Listener
+
 import os
 import json
 
@@ -13,9 +16,12 @@ class OptionsMenu(QFrame):
         super().__init__()
         self.crosshair = crosshair
         self.is_night_theme = False
+        self.right_button_enabled = False
+        self.listener = None
         self.initUI()
         self.load_settings()
-
+    
+    
     def initUI(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(2, 2, 2, 2)
@@ -58,22 +64,6 @@ class OptionsMenu(QFrame):
             "QPushButton { background-color: #707d75; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #606b64; }"
         )
 
-        self.transparency_button = QPushButton("○ Adjust Transparency ○")
-        self.transparency_button.setStyleSheet(
-            "QPushButton { background-color: #D32F2F; color: #fff; border: none; border-radius: 50px; padding: 10px; min-width: 200px; } QPushButton:pressed { background-color: #B71C1C; }"
-        )
-        layout.addWidget(self.transparency_button)
-
-        # Connect the mousePress and mouseRelease events to corresponding functions
-        self.transparency_button.mousePressEvent = self.mousePressEvent
-        self.transparency_button.mouseReleaseEvent = self.mouseReleaseEvent
-
-        # Variables to track transparency changes
-        self.transparency_timer = None
-        self.transparency_direction = 0  # 0 means increasing, 1 means decreasing
-        self.alpha_increment = 0.01
-
-
         vertical_adjust_label = QLabel("Adjust the crosshair position in pixels")
         self.vertical_adjust_input = QLineEdit(str(0))
         self.vertical_adjust_input.setStyleSheet(
@@ -98,6 +88,12 @@ class OptionsMenu(QFrame):
             "QPushButton { background-color: #70ad47; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #548235; }"
         )
 
+        self.config_save_button = QPushButton("Hide crosshair on R-click")
+        self.config_save_button.clicked.connect(self.toggle_right_button_functionality)
+        self.config_save_button.setStyleSheet(
+            "QPushButton { background-color: #ffaa00; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #cc8800; }"
+        )
+
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.night_day_button)
         button_layout.addWidget(self.apply_button)
@@ -110,6 +106,7 @@ class OptionsMenu(QFrame):
         layout.addWidget(self.vertical_adjust_input)
         layout.addWidget(alpha_label)
         layout.addWidget(self.alpha_slider)
+        layout.addWidget(self.config_save_button)
         layout.addWidget(self.calculator_button)
         layout.addStretch()
 
@@ -139,27 +136,24 @@ class OptionsMenu(QFrame):
         calculator_dialog.exec_()
 
     def save_settings(self):
-        # Gather the settings to save
         settings = {
             "diameter": self.crosshair.diameter,
             "alpha": self.crosshair.alpha,
             "crosshair_color": self.crosshair.crosshair_color.name(),
             "crosshair_shape": self.crosshair.crosshair_shape,
             "is_outline_border": self.crosshair.is_outline_border,
-            "night_theme": self.is_night_theme,  # Save the current theme state
-            "vertical_adjust_input": int(self.vertical_adjust_input.text()),  # Save the vertical adjust value
+            "night_theme": self.is_night_theme, 
+            "vertical_adjust_input": int(self.vertical_adjust_input.text()),
         }
 
-        # Save the settings to a configuration file (e.g., config.json)
         config_folder = "config"
-        os.makedirs(config_folder, exist_ok=True)  # Create the config folder if it doesn't exist
+        os.makedirs(config_folder, exist_ok=True) 
         config_path = os.path.join(config_folder, "config.json")
 
         with open(config_path, "w") as config_file:
             json.dump(settings, config_file)
 
     def load_settings(self):
-        # Load settings from the configuration file (if available)
         config_folder = "config"
         config_path = os.path.join(config_folder, "config.json")
 
@@ -167,19 +161,17 @@ class OptionsMenu(QFrame):
             with open(config_path, "r") as config_file:
                 settings = json.load(config_file)
 
-            # Apply the loaded settings to the crosshair app
             self.crosshair.update_diameter(settings.get("diameter", self.crosshair.diameter))
             self.crosshair.alpha = settings.get("alpha", self.crosshair.alpha)
             self.crosshair.set_transparency(self.crosshair.alpha)
             self.crosshair.set_crosshair_color(settings.get("crosshair_color", self.crosshair.crosshair_color.name()))
             self.crosshair.set_crosshair_shape(settings.get("crosshair_shape", self.crosshair.crosshair_shape))
             self.crosshair.is_outline_border = settings.get("is_outline_border", self.crosshair.is_outline_border)
-            self.crosshair.new_window_y += settings.get("vertical_adjust_input", 0)  # Apply vertical adjust value
+            self.crosshair.new_window_y += settings.get("vertical_adjust_input", 0) 
             self.crosshair.setGeometry(self.crosshair.new_window_x, self.crosshair.new_window_y,
                                        self.crosshair.window_width, self.crosshair.window_height)
             self.crosshair.repaint()
 
-            # Load the theme setting and apply it
             self.is_night_theme = settings.get("night_theme", False)
             if self.is_night_theme:
                 self.set_night_theme()
@@ -187,7 +179,6 @@ class OptionsMenu(QFrame):
                 self.set_day_theme()
 
         except (FileNotFoundError, json.JSONDecodeError):
-            # The config file doesn't exist or is corrupted, do nothing
             pass
 
     def apply_changes(self):
@@ -220,46 +211,6 @@ class OptionsMenu(QFrame):
         self.crosshair.alpha = value / 100.0
         self.crosshair.set_transparency(self.crosshair.alpha)
         self.crosshair.repaint()
-
-    def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.RightButton:
-            # Start a timer for decreasing transparency
-            self.transparency_direction = 1  # 1 means decreasing transparency
-            self.transparency_timer = QTimer()
-            self.transparency_timer.timeout.connect(self.update_transparency)
-            self.transparency_timer.start(50)  # Set the timer interval (in milliseconds)
-        else:
-            # Pass other mouse press events to the default handler
-            QPushButton.mousePressEvent(self.transparency_button, event)
-
-    def mouseReleaseEvent(self, event: QMouseEvent):
-        if event.button() == Qt.RightButton:
-            # Start a timer for increasing transparency
-            self.transparency_direction = 0  # 0 means increasing transparency
-            self.transparency_timer = QTimer()
-            self.transparency_timer.timeout.connect(self.update_transparency)
-            self.transparency_timer.start(50)  # Set the timer interval (in milliseconds)
-        else:
-            # Pass other mouse release events to the default handler
-            QPushButton.mouseReleaseEvent(self.transparency_button, event)
-
-    def update_transparency(self):
-        if self.transparency_direction == 1:
-            # Decrease transparency until it reaches 0
-            self.crosshair.alpha -= self.alpha_increment
-            if self.crosshair.alpha < 0:
-                self.crosshair.alpha = 0
-                self.transparency_timer.stop()
-        else:
-            # Increase transparency until it reaches 1
-            self.crosshair.alpha += self.alpha_increment
-            if self.crosshair.alpha > 1:
-                self.crosshair.alpha = 1
-                self.transparency_timer.stop()
-
-        # Update the crosshair transparency and repaint
-        self.crosshair.set_transparency(self.crosshair.alpha)
-        self.crosshair.repaint()
         
     def toggle_night_day_theme(self):
         if self.is_night_theme:
@@ -280,3 +231,27 @@ class OptionsMenu(QFrame):
         )
         self.night_day_button.setText("Day")
         self.is_night_theme = True
+
+    def on_click_windows(self, x, y, button, pressed):
+        if button == button.right and pressed and self.right_button_enabled:
+            self.crosshair.hide()
+
+        if button == button.right and not pressed:
+            self.crosshair.show()
+
+    def on_click_other(self, x, y, button, pressed):
+        if button == button.right and not pressed:
+            self.crosshair.show()
+
+    def toggle_right_button_functionality(self):
+        self.right_button_enabled = not self.right_button_enabled
+        if self.right_button_enabled:
+            if platform.system() == "Windows":
+                self.listener = Listener(on_click=self.on_click_windows)
+            else:
+                self.listener = Listener(on_click=self.on_click_other)
+            self.listener.start()
+        else:
+            if self.listener is not None:
+                self.listener.stop()
+                self.listener = None 
