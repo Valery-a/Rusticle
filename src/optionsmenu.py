@@ -1,9 +1,7 @@
 from PyQt5.QtWidgets import QSlider, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame
-from PyQt5.QtCore import Qt, QPoint, QTimer
-from PyQt5.QtGui import QMouseEvent
+from PyQt5.QtCore import Qt, QPoint
 import platform
 from pynput.mouse import Listener
-
 import os
 import json
 
