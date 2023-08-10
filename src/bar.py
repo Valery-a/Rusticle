@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QPushButton
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QColor
+from PyQt5.QtGui import QPainter, QPen, QColor, QLinearGradient
 
 class TitleBar(QWidget):
     def __init__(self, parent):
@@ -11,14 +11,14 @@ class TitleBar(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
 
-        self.title_label = QLabel("RustOracle", self)
-        self.title_label.setStyleSheet("background-color: gray; color: black; font-size: 18px; padding-left: 10px;")
+        self.title_label = QLabel("Rusticle", self)
+        self.title_label.setStyleSheet("background-color: transparent; color: white; font-size: 18px; padding-left: 10px;")
 
         self.close_button = QPushButton("×", self)
         self.close_button.setStyleSheet("""
             QPushButton {
                 background-color: transparent;
-                color: black;
+                color: white;
                 font-size: 20px;
                 width: 25px;
                 height: 25px;
@@ -26,9 +26,8 @@ class TitleBar(QWidget):
                 margin: 0;
             }
             QPushButton:hover {
-                border: 1px solid #ccc; 
+                background-color: #e81123;
                 border-radius: 5px;
-                background-color: #dc3545;
             }
         """)
         self.close_button.clicked.connect(self.parent().closeEvent)
@@ -37,7 +36,7 @@ class TitleBar(QWidget):
         self.minimize_button.setStyleSheet("""
             QPushButton {
                 background-color: transparent;
-                color: black;
+                color: white;
                 font-size: 20px;
                 width: 25px;
                 height: 25px;
@@ -45,9 +44,8 @@ class TitleBar(QWidget):
                 margin: 0;
             }
             QPushButton:hover {
-                border: 1px solid #ccc; 
+                background-color: #0078d4;
                 border-radius: 5px;
-                background-color: #Ffa500;
             }
         """)
         self.minimize_button.clicked.connect(self.parent().showMinimized)
@@ -73,6 +71,15 @@ class TitleBar(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
+
+        gradient = QLinearGradient(0, 0, self.width(), self.height())
+        gradient.setColorAt(0, QColor(53, 53, 53))
+        gradient.setColorAt(1, QColor(33, 33, 33))
+
+        painter.setBrush(gradient)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(self.rect())
+
         painter.setPen(QPen(QColor(64, 64, 64), 1))  # Set the pen color to dark gray
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
         painter.end()
