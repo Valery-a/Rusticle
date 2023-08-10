@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QFormLayout, QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QFormLayout, QDialog, QLabel, QComboBox, QVBoxLayout, QPushButton, QGraphicsOpacityEffect
+from PyQt5.QtGui import QColor, QPainter
+from PyQt5.QtCore import Qt, QParallelAnimationGroup, QRect, QSequentialAnimationGroup
 
 class AdvancedOptionsDialog(QDialog):
     def __init__(self, crosshair):
@@ -17,11 +18,13 @@ class AdvancedOptionsDialog(QDialog):
         form_layout = QFormLayout()
 
         color_label = QLabel("Crosshair Color:")
-        self.color_input = QLineEdit("#ffffff")
+        self.color_input = QComboBox()
+        self.populate_color_palette()
         form_layout.addRow(color_label, self.color_input)
 
         shape_label = QLabel("Crosshair Shape:")
-        self.shape_input = QLineEdit("1-10") 
+        self.shape_input = QComboBox()
+        self.populate_shape_options()
         form_layout.addRow(shape_label, self.shape_input)
 
         layout.addLayout(form_layout)
@@ -33,10 +36,6 @@ class AdvancedOptionsDialog(QDialog):
         apply_button = QPushButton("Apply")
         apply_button.clicked.connect(self.apply_changes)
         layout.addWidget(apply_button)
-
-        self.close_button = QPushButton("Close")
-        self.close_button.clicked.connect(self.close)
-        layout.addWidget(self.close_button)
 
         self.setLayout(layout)
 
@@ -50,7 +49,7 @@ class AdvancedOptionsDialog(QDialog):
             QLabel {
                 color: #66d9ef;
             }
-            QLineEdit, QPushButton {
+            QComboBox, QPushButton {
                 background-color: #44475a;
                 color: white;
                 border: 1px solid #66d9ef;
@@ -62,12 +61,27 @@ class AdvancedOptionsDialog(QDialog):
                 background-color: #66d9ef;
                 color: #282c34;
             }
+            QComboBox QAbstractItemView {
+                border: 1px solid #66d9ef;
+                background-color: #44475a;
+                color: white;
+                selection-background-color: #66d9ef;
+            }
             """
         )
 
+    def populate_color_palette(self):
+        colors = ["#ffffff", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#ff00ff"]
+        for color in colors:
+            self.color_input.addItem(color)
+
+    def populate_shape_options(self):
+        for i in range(1, 11):
+            self.shape_input.addItem(str(i))
+
     def apply_changes(self):
-        color = self.color_input.text()
-        shape = self.shape_input.text()
+        color = self.color_input.currentText()
+        shape = self.shape_input.currentText()
 
         self.crosshair.set_crosshair_color(color)
         self.crosshair.set_crosshair_shape(shape)
@@ -80,3 +94,10 @@ class AdvancedOptionsDialog(QDialog):
             self.crosshair.is_outline_border = True
             self.outline_border_button.setText("Remove Outline Border")
         self.crosshair.repaint()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QColor("#44475a"))
+        painter.drawRect(self.rect())
