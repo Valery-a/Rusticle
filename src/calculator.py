@@ -53,14 +53,12 @@ class CalculatorDialog(QDialog):
         grid_layout.addWidget(separator_line2, 6, 0, 1, 2)  # Span 2 columns
 
         # New Result Label
-        grid_layout.addWidget(QLabel("Result:"), 7, 0)
         self.result_label = QLabel()
         self.result_label.setAlignment(Qt.AlignCenter)
         grid_layout.addWidget(self.result_label, 7, 1)
 
         layout.addLayout(grid_layout)
 
-        # Apply Stylesheet
         self.setStyleSheet('''
             QDialog {
                 background-color: #2c3e50; /* Dark Blue */

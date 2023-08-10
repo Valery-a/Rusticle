@@ -11,7 +11,6 @@ class AdvancedOptionsDialog(QDialog):
         self.setWindowTitle("Advanced Options")
         self.setGeometry(200, 200, 300, 200)
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
-        self.setFixedSize(300, 300)
 
         layout = QVBoxLayout()
 
@@ -47,7 +46,6 @@ class AdvancedOptionsDialog(QDialog):
                 background-color: #282c34;
                 color: white;
                 font-size: 14px;
-                border-radius: 10px;  /* Rounded borders */
             }
             QLabel {
                 color: #66d9ef;

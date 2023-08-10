@@ -25,11 +25,8 @@ class OptionsMenu(QFrame):
         layout.setContentsMargins(2, 2, 2, 2)
 
         self.setWindowTitle("RustOracle")
-        self.setGeometry(100, 100, 300, 200)
+        self.setGeometry(200, 200, 300, 200)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-
-        self.title_bar = TitleBar(self)
-        layout.addWidget(self.title_bar)
 
         self.config_save_button = QPushButton("Config Save")
         self.config_save_button.clicked.connect(self.save_settings)
@@ -114,7 +111,6 @@ class OptionsMenu(QFrame):
             """
             OptionsMenu {
                 background-color: #f5f5f5;
-                border: 1px solid #ccc;
             }
             QLabel, QLineEdit {
                 color: #333;
