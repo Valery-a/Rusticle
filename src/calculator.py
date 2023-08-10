@@ -1,67 +1,24 @@
-from PyQt5.QtWidgets import QLabel, QFrame, QLineEdit, QPushButton, QVBoxLayout, QComboBox, QGridLayout, QDialog
+from PyQt5.QtWidgets import (
+    QLabel, QFrame, QLineEdit, QPushButton, QVBoxLayout, QComboBox, QGridLayout, QDialog, QScrollArea
+)
 from PyQt5.QtCore import Qt
+
 
 class CalculatorDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Rust Raid Cost Calculator")
-        self.setGeometry(0, 0, 500, 200)  # Adjust size if needed
+        self.setGeometry(0, 0, 500, 400)
 
+        self.initUI()
+
+    def initUI(self):
         layout = QVBoxLayout(self)
-        self.setLayout(layout)
         layout.setContentsMargins(20, 20, 20, 20)
-
-        grid_layout = QGridLayout()
-        grid_layout.setVerticalSpacing(10)
-
-        # Tool Selection Section
-        grid_layout.addWidget(QLabel("Select a tool:"), 0, 0)
-        self.tool_type_combo = QComboBox()
-        self.tool_type_combo.addItems(["C4", "Rocket"])  # Add more tools if needed
-        grid_layout.addWidget(self.tool_type_combo, 0, 1)
-
-        grid_layout.addWidget(QLabel("Enter the quantity:"), 1, 0)
-        self.quantity_input = QLineEdit("1")
-        grid_layout.addWidget(self.quantity_input, 1, 1)
-
-        calculate_tool_button = QPushButton("Calculate Tool Cost")
-        calculate_tool_button.clicked.connect(self.calculate_tool_cost)
-        grid_layout.addWidget(calculate_tool_button, 2, 0, 1, 2)  # Span 2 columns
-
-        # Separator Line
-        separator_line = QFrame()
-        separator_line.setFrameShape(QFrame.HLine)
-        separator_line.setFrameShadow(QFrame.Sunken)
-        grid_layout.addWidget(separator_line, 3, 0, 1, 2)  # Span 2 columns
-
-        # Wall Selection Section
-        grid_layout.addWidget(QLabel("Select a wall:"), 4, 0)
-        self.wall_type_combo = QComboBox()
-        self.wall_type_combo.addItems([
-            "Twig Wall", "Wooden Wall", "Stone Wall", "Metal Wall", "Armored Wall"
-        ])  # Add more walls if needed
-        grid_layout.addWidget(self.wall_type_combo, 4, 1)
-
-        calculate_wall_button = QPushButton("Calculate Wall Info")
-        calculate_wall_button.clicked.connect(self.calculate_wall_info)
-        grid_layout.addWidget(calculate_wall_button, 5, 0, 1, 2)  # Span 2 columns
-
-        # Separator Line
-        separator_line2 = QFrame()
-        separator_line2.setFrameShape(QFrame.HLine)
-        separator_line2.setFrameShadow(QFrame.Sunken)
-        grid_layout.addWidget(separator_line2, 6, 0, 1, 2)  # Span 2 columns
-
-        # New Result Label
-        self.result_label = QLabel()
-        self.result_label.setAlignment(Qt.AlignCenter)
-        grid_layout.addWidget(self.result_label, 7, 1)
-
-        layout.addLayout(grid_layout)
 
         self.setStyleSheet('''
             QDialog {
-                background-color: #2c3e50; /* Dark Blue */
+                background-color: #1f2630; /* Dark Rust Blue */
             }
             QLabel {
                 font-size: 18px;
@@ -71,41 +28,134 @@ class CalculatorDialog(QDialog):
                 font-size: 18px;
                 color: #000000; /* Black */
                 background-color: #ecf0f1; /* Light Grey */
-                border: 1px solid #34495e; /* Darker Blue */
+                border: 1px solid #34495e; /* Darker Rust Blue */
                 border-radius: 5px;
+                padding: 10px; /* Increased padding for a more spacious look */
+                selection-background-color: #2980b9; /* Selected text background color */
+            }
+            QComboBox::down-arrow, QComboBox::up-arrow {
+                image: none; /* Remove default arrows */
+            }
+            QComboBox::drop-down {
+                subcontrol-origin: padding;
+                subcontrol-position: top right;
+                width: 20px; /* Set the width of the drop-down arrow area */
+                border-left-width: 0px;
+            }
+            QComboBox::drop-down:hover {
+                background-color: #bdc3c7; /* Hover color for the drop-down area */
             }
             QPushButton {
                 font-size: 18px;
                 color: #ffffff; /* White */
-                background-color: #3498db; /* Light Blue */
-                border: 2px solid #2980b9; /* Slightly Darker Blue */
+                background-color: #e74c3c; /* Rust Red */
+                border: 2px solid #c0392b; /* Slightly Darker Rust Red */
                 border-radius: 8px;
                 padding: 10px;
             }
             QPushButton:hover {
-                background-color: #2980b9; /* Slightly Darker Blue */
+                background-color: #c0392b; /* Slightly Darker Rust Red */
             }
             QFrame {
                 color: #b2b2b2; /* Lighter Grey */
             }
         ''')
 
+        grid_layout = QGridLayout()
+        grid_layout.setVerticalSpacing(10)
+
+        self.tool_type_combo = QComboBox()
+        self.tool_type_combo.addItems(["C4", "Rocket"])
+        self.quantity_input = QLineEdit("")
+        self.calculate_tool_button = QPushButton("Calculate Tool Cost")
+
+        self.wall_type_combo = QComboBox()
+        self.wall_type_combo.addItems([
+            "Twig Wall", "Wooden Wall", "Stone Wall", "Metal Wall", "Armored Wall"
+        ])
+        self.calculate_wall_button = QPushButton("Calculate Wall Info")
+
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.result_label = QLabel()
+        self.result_label.setAlignment(Qt.AlignCenter)
+        self.result_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.result_label.setStyleSheet('''
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #1f2630; /* Dark Rust Blue */
+        ''')
+        self.scroll_area.setWidget(self.result_label)
+
+        # Set the scroll bar style for both vertical and horizontal
+        scroll_bar_style = '''
+            QScrollBar:vertical, QScrollBar:horizontal {
+                border: none;
+                background: #34495e; /* Darker Rust Blue */
+                width: 8px;
+                height: 8px;
+                margin: 0px 0px 0px 0px;
+            }
+            
+            QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+                background: #95a5a6; /* Light Grey */
+                border-radius: 4px;
+            }
+
+            QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover {
+                background: #7f8c8d; /* Slightly Darker Light Grey */
+            }
+        '''
+        self.scroll_area.verticalScrollBar().setStyleSheet(scroll_bar_style)
+        self.scroll_area.horizontalScrollBar().setStyleSheet(scroll_bar_style)
+
+        self.calculate_tool_button.clicked.connect(self.calculate_tool_cost)
+        self.calculate_wall_button.clicked.connect(self.calculate_wall_info)
+
+        grid_layout.addWidget(QLabel("Select a tool:"), 0, 0)
+        grid_layout.addWidget(self.tool_type_combo, 0, 1)
+        grid_layout.addWidget(QLabel("Enter the quantity:"), 1, 0)
+        grid_layout.addWidget(self.quantity_input, 1, 1)
+        grid_layout.addWidget(self.calculate_tool_button, 2, 0, 1, 2)
+
+        separator_line = QFrame()
+        separator_line.setFrameShape(QFrame.HLine)
+        separator_line.setFrameShadow(QFrame.Sunken)
+        grid_layout.addWidget(separator_line, 3, 0, 1, 2)
+
+        grid_layout.addWidget(QLabel("Select a wall:"), 4, 0)
+        grid_layout.addWidget(self.wall_type_combo, 4, 1)
+        grid_layout.addWidget(self.calculate_wall_button, 5, 0, 1, 2)
+
+        separator_line2 = QFrame()
+        separator_line2.setFrameShape(QFrame.HLine)
+        separator_line2.setFrameShadow(QFrame.Sunken)
+        grid_layout.addWidget(separator_line2, 6, 0, 1, 2)
+
+        grid_layout.addWidget(self.scroll_area, 7, 0, 1, 2)
+
+        layout.addLayout(grid_layout)
+        self.setLayout(layout)
+
     def calculate_tool_cost(self):
         selected_tool = self.tool_type_combo.currentText()
-        quantity = int(self.quantity_input.text())
+        quantity_text = self.quantity_input.text()
 
-        # Dictionary containing information about each tool
+        if not quantity_text.isdigit():
+            self.result_label.setText("Please enter a valid quantity.")
+            return
+
+        quantity = int(quantity_text)
         tools_info = {
             "C4": {"sulfur": 2200, "charcoal": 3000},
             "Rocket": {"sulfur": 1400, "charcoal": 1950},
-            # Add more tools if needed
         }
 
         if selected_tool in tools_info:
             sulfur_cost = tools_info[selected_tool]["sulfur"] * quantity
             charcoal_cost = tools_info[selected_tool]["charcoal"] * quantity
 
-            sulfur_nodes, sulfur_remainder = divmod(sulfur_cost, 300)  # Each node gives 300 sulfur
+            sulfur_nodes, sulfur_remainder = divmod(sulfur_cost, 300)
 
             if sulfur_remainder > 0:
                 sulfur_nodes += 1
@@ -122,7 +172,6 @@ class CalculatorDialog(QDialog):
     def calculate_wall_info(self):
         selected_wall = self.wall_type_combo.currentText()
 
-        # Dictionary containing information about each wall type
         walls_info = {
             "Twig Wall": {
                 "HP": 10,
@@ -150,12 +199,18 @@ class CalculatorDialog(QDialog):
                 "Destroying Costs": "Timed Explosive Charge×8 (20 sec, Sulfur Amount×17,600)\nExplosive 5.56 Rifle Ammo×799 (5 min 46 sec, Sulfur Amount×19,975)\nRocket×15 (1 min 24 sec, Sulfur Amount×21,000)\nSatchel Charge×46 (1 min 16 sec, Sulfur Amount×22,080)\nBeancan Grenade×223 (13 min 58 sec, Sulfur Amount×26,760)\nHigh Velocity Rocket×134 (13 min 18 sec, Sulfur Amount×26,800)\nF1 Grenade×1,986 (1 hour 22 min 46 sec, Sulfur Amount×119,160)"
             }
         }
+
         if selected_wall in walls_info:
             wall_hp = walls_info[selected_wall]["HP"]
             wall_cost = walls_info[selected_wall]["Cost"]
             destroying_costs = walls_info[selected_wall]["Destroying Costs"]
 
-            result_text = f"{selected_wall}:\nHP: {wall_hp}\nCost: {wall_cost}\n\nDestroying Costs:\n{destroying_costs}"
+            result_text = (
+                f"{selected_wall}:\n"
+                f"HP: {wall_hp}\n"
+                f"Cost: {wall_cost}\n\n"
+                f"Destroying Costs:\n{destroying_costs}"
+            )
             self.result_label.setText(result_text)
         else:
             self.result_label.setText("Invalid wall type.")
