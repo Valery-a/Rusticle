@@ -53,12 +53,6 @@ class OptionsMenu(QFrame):
             "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; background: #a5aad9; border-radius: 5px; padding: 5px; }"
         )
 
-        self.advanced_options_button = QPushButton("Advanced Options")
-        self.advanced_options_button.clicked.connect(self.open_advanced_options)
-        self.advanced_options_button.setStyleSheet(
-            "QPushButton { background-color: #707d75; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #606b64; }"
-        )
-
         vertical_adjust_label = QLabel("Adjust the crosshair position in pixels")
         self.vertical_adjust_input = QLineEdit(str(0))
         self.vertical_adjust_input.setStyleSheet(
@@ -77,12 +71,6 @@ class OptionsMenu(QFrame):
             "QSlider::groove:horizontal { height: 6px; background: #ccc; border-radius: 3px; } QSlider::handle:horizontal { width: 16px; height: 16px; margin: -5px 0; background: #a5aad9; border: 2px solid #a5aad9; border-radius: 8px; }"
         )
 
-        self.calculator_button = QPushButton("CALCULATOR")
-        self.calculator_button.clicked.connect(self.open_calculator)
-        self.calculator_button.setStyleSheet(
-            "QPushButton { background-color: #70ad47; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #548235; }"
-        )
-
         self.config_save_button = QPushButton("Hide crosshair on R-click")
         self.config_save_button.clicked.connect(self.toggle_right_button_functionality)
         self.config_save_button.setStyleSheet(
@@ -93,7 +81,6 @@ class OptionsMenu(QFrame):
         button_layout.addWidget(self.night_day_button)
         button_layout.addWidget(self.apply_button)
 
-        layout.addWidget(self.advanced_options_button)
         layout.addLayout(button_layout)
         layout.addWidget(diameter_label)
         layout.addWidget(self.diameter_input)
@@ -102,18 +89,19 @@ class OptionsMenu(QFrame):
         layout.addWidget(alpha_label)
         layout.addWidget(self.alpha_slider)
         layout.addWidget(self.config_save_button)
-        layout.addWidget(self.calculator_button)
         layout.addStretch()
 
         self.setLayout(layout)
-
+        
         self.setStyleSheet(
             """
             OptionsMenu {
                 background-color: #f5f5f5;
+                border-radius: 10px;
             }
             QLabel, QLineEdit {
                 color: #333;
+                border-radius: 10px;
             }
             QPushButton {
                 background-color: #007BFF;
@@ -123,11 +111,6 @@ class OptionsMenu(QFrame):
         )
         
         self.set_day_theme()
-
-    def open_calculator(self):
-        calculator_dialog = CalculatorDialog(self)
-        calculator_dialog.setModal(True)
-        calculator_dialog.exec_()
 
     def save_settings(self):
         settings = {
@@ -190,16 +173,6 @@ class OptionsMenu(QFrame):
 
         except ValueError:
             pass
-    
-    def open_advanced_options(self):
-        dialog = AdvancedOptionsDialog(self.crosshair)
-        options_menu_position = self.mapToGlobal(QPoint(0, 0))
-        x_offset = self.width() + 10
-        y_offset = 0
-
-        dialog.move(options_menu_position + QPoint(x_offset, y_offset))
-        dialog.setModal(True)
-        dialog.exec_()
     
     def update_alpha(self, value):
         self.crosshair.alpha = value / 100.0
