@@ -8,7 +8,7 @@
 <details>
 <summary>Installation</summary>
 <br>
-To download the latest version of Rusticle, you need to click on [Releases](https://github.com/Valery-a/Rusticle/releases) and install the exe file.
+To obtain the most up-to-date version of Rusticle, simply visit the [Releases section](https://github.com/Valery-a/Rusticle/releases), where you can identify the latest addition, and proceed to install the provided rar archive.
 </details>
 
 <details>
