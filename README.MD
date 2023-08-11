@@ -1,3 +1,6 @@
+![](https://cdn.discordapp.com/attachments/1131944883804975388/1139527182461456424/banner.png)
+
+
 ## Welcome to Rusticle's official githup repo! This guide will help you understand how to use the application effectively.
 
 ### Table of Contents
@@ -47,3 +50,11 @@ Click the "Calculate Wall Info" button to see the wall's HP, cost, and destroyin
 Closing the Application
 To close the application, simply click the close button (X) located at the top-right corner of the main window.
 </details>
+
+## Seeking Assistance or Offering Suggestions?
+
+Whether you're seeking guidance or have innovative ideas to share, don't hesitate to open a discussion.
+
+[🔗 Join the Discussion](https://github.com/Valery-a/Rusticle/discussions)
+
+Since I'm heading up this project, I really appreciate your thoughts and suggestions. They play a key role in shaping how this project grows. Feel free to share your insights!   (:
