@@ -42,36 +42,37 @@ class AdvancedOptionsDialog(QDialog):
         self.setStyleSheet(
             """
             QDialog {
-                background-color: #282c34;
+                background-color: #2b2b2b;
                 color: white;
                 font-size: 14px;
             }
             QLabel {
-                color: #66d9ef;
+                color: #ff5555;
             }
             QComboBox, QPushButton {
-                background-color: #44475a;
+                background-color: #444444;
                 color: white;
-                border: 1px solid #66d9ef;
+                border: 1px solid #ff5555;
                 border-radius: 5px;
-                padding: 5px;
+                width: 100%;
+                padding: 10px;
                 font-size: 14px;
             }
             QPushButton:hover {
-                background-color: #66d9ef;
-                color: #282c34;
+                background-color: #ff5555;
+                color: #2b2b2b;
             }
             QComboBox QAbstractItemView {
-                border: 1px solid #66d9ef;
-                background-color: #44475a;
+                border: 1px solid #ff5555;
+                background-color: #444444;
                 color: white;
-                selection-background-color: #66d9ef;
+                selection-background-color: #ff5555;
             }
             """
         )
 
     def populate_color_palette(self):
-        colors = ["#ffffff", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#ff00ff"]
+        colors = ["#ff5555", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999"]
         for color in colors:
             self.color_input.addItem(color)
 
@@ -99,5 +100,5 @@ class AdvancedOptionsDialog(QDialog):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setPen(Qt.NoPen)
-        painter.setBrush(QColor("#44475a"))
+        painter.setBrush(QColor("#444444"))
         painter.drawRect(self.rect())

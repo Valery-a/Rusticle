@@ -23,27 +23,28 @@ class MainMenu(QMainWindow):
         tab_widget = QTabWidget()
         self.setCentralWidget(tab_widget)
 
-        # Apply dark stylesheet to the tab widget and its contents
-        dark_stylesheet = """
+        # Apply dynamic stylesheet to the tab widget and its contents
+        dynamic_stylesheet = """
             QTabWidget::pane {
                 background-color: #2E2E2E;
                 border-radius: 10px;
             }
             QTabWidget::tab-bar {
-                display: flex;
-                justify-content: center;
-                width: 400%;
+                flex: 1;
+                background-color: #2E2E2E;
+                border-radius: 10px;
             }
             QTabBar::tab {
+                flex: 1;
                 background-color: #3E3E3E;
                 color: white;
-                
+                padding: 8px;
             }
             QTabBar::tab:selected {
                 background-color: red;
             }
         """
-        tab_widget.setStyleSheet(dark_stylesheet)
+        tab_widget.setStyleSheet(dynamic_stylesheet)
 
         advanced_options_menu = AdvancedOptionsDialog(self.crosshair)
         calculator_menu = CalculatorDialog(self)
@@ -52,6 +53,7 @@ class MainMenu(QMainWindow):
         tab_widget.addTab(options_menu, "Options Menu")
         tab_widget.addTab(advanced_options_menu, "Advanced Options")
         tab_widget.addTab(calculator_menu, "Calculator")
+
 
 def main():
     app = QApplication(sys.argv)

@@ -110,7 +110,7 @@ class OptionsMenu(QFrame):
             """
         )
         
-        self.set_day_theme()
+        self.set_night_theme()
 
     def save_settings(self):
         settings = {
