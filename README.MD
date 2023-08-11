@@ -1,4 +1,4 @@
-![](https://cdn.discordapp.com/attachments/1131944883804975388/1139527182461456424/banner.png)
+![](https://cdn.discordapp.com/attachments/1131944883804975388/1139550615576531014/banner1.png)
 
 
 ## Welcome to Rusticle's official githup repo! This guide will help you understand how to use the application effectively.
@@ -58,3 +58,17 @@ Whether you're seeking guidance or have innovative ideas to share, don't hesitat
 [🔗 Join the Discussion](https://github.com/Valery-a/Rusticle/discussions)
 
 Since I'm heading up this project, I really appreciate your thoughts and suggestions. They play a key role in shaping how this project grows. Feel free to share your insights!   (:
+
+## Show Your Support!
+
+If you find this software useful and it has helped you, consider showing your appreciation by giving it a ⭐. While the software remains free for everyone, your support goes a long way in motivating me to continue refining and expanding its features.
+
+![⭐ Star the Repository](https://cdn.discordapp.com/attachments/1131944883804975388/1139553081479143564/2023-08-11_16-07-43.gif)
+
+By starring the repository, you let me know that my work is valued and that you'd like to see more of it. It's a simple gesture that means a lot and keeps me inspired.
+
+## Acknowledgments
+
+- The data for the calculator has been sourced from [RustLabs](https://rustlabs.com/)
+
+- The banner image at the top was made by [Екатерина Чеснокова](https://twitter.com/DDAzotka2033)
