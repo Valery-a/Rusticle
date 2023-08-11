@@ -1,6 +1,10 @@
-from PyQt5.QtWidgets import QFormLayout, QDialog, QLabel, QComboBox, QVBoxLayout, QPushButton, QGraphicsOpacityEffect
+import re
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QPainter
-from PyQt5.QtCore import Qt, QParallelAnimationGroup, QRect, QSequentialAnimationGroup
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QFormLayout, QLabel, QComboBox, QPushButton,
+    QLineEdit
+)
 
 class AdvancedOptionsDialog(QDialog):
     def __init__(self, crosshair):
@@ -20,11 +24,16 @@ class AdvancedOptionsDialog(QDialog):
         color_label = QLabel("Crosshair Color:")
         self.color_input = QComboBox()
         self.populate_color_palette()
+        self.color_input.currentTextChanged.connect(self.update_color)
         form_layout.addRow(color_label, self.color_input)
+
+        self.hex_color_input = QLineEdit()
+        self.hex_color_input.textChanged.connect(self.update_color)
 
         shape_label = QLabel("Crosshair Shape:")
         self.shape_input = QComboBox()
         self.populate_shape_options()
+        self.shape_input.currentTextChanged.connect(self.update_shape)
         form_layout.addRow(shape_label, self.shape_input)
 
         layout.addLayout(form_layout)
@@ -32,10 +41,6 @@ class AdvancedOptionsDialog(QDialog):
         self.outline_border_button = QPushButton("Add Outline Border")
         self.outline_border_button.clicked.connect(self.toggle_outline_border)
         layout.addWidget(self.outline_border_button)
-
-        apply_button = QPushButton("Apply")
-        apply_button.clicked.connect(self.apply_changes)
-        layout.addWidget(apply_button)
 
         self.setLayout(layout)
 
@@ -49,7 +54,7 @@ class AdvancedOptionsDialog(QDialog):
             QLabel {
                 color: #ff5555;
             }
-            QComboBox, QPushButton {
+            QComboBox, QPushButton, QLineEdit {
                 background-color: #444444;
                 color: white;
                 border: 1px solid #ff5555;
@@ -72,20 +77,24 @@ class AdvancedOptionsDialog(QDialog):
         )
 
     def populate_color_palette(self):
-        colors = ["#ff5555", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999"]
+        colors = ["#ff4040", "#89ffa0", "#0000ff", "#777fff", "#777fff", "#a75ad0", "#ffe589"]
         for color in colors:
             self.color_input.addItem(color)
+        self.color_input.setEditable(True)
 
     def populate_shape_options(self):
         for i in range(1, 11):
             self.shape_input.addItem(str(i))
 
-    def apply_changes(self):
-        color = self.color_input.currentText()
-        shape = self.shape_input.currentText()
+    def update_color(self, value):
+        if self.is_valid_hex_color(value):
+            self.crosshair.set_crosshair_color(value)
 
-        self.crosshair.set_crosshair_color(color)
-        self.crosshair.set_crosshair_shape(shape)
+    def update_shape(self, value):
+        self.crosshair.set_crosshair_shape(value)
+
+    def is_valid_hex_color(self, color):
+        return re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color)
 
     def toggle_outline_border(self):
         if self.crosshair.is_outline_border:

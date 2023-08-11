@@ -11,7 +11,7 @@ class TitleBar(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
 
-        self.title_label = QLabel("Rusticle", self)
+        self.title_label = QLabel("Rusticle✜", self)
         self.title_label.setStyleSheet("background-color: transparent; color: white; font-size: 18px; padding-left: 10px;")
 
         self.close_button = QPushButton("×", self)

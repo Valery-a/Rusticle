@@ -35,6 +35,15 @@ class CalculatorDialog(QDialog):
         padding: 10px;
         font-size: 14px;
     }
+    QLineEdit {
+                background-color: #444444;
+                color: white;
+                border: 1px solid #ff5555;
+                border-radius: 5px;
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+            }
     QComboBox:hover, QPushButton:hover {
         background-color: #ff5555;
         color: #2b2b2b;

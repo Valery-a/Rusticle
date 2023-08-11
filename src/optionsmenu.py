@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QSlider, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame, QGroupBox
+from PyQt5.QtWidgets import QSlider, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame, QGroupBox, QCheckBox
 from PyQt5.QtCore import Qt, QPoint
 import platform
 from pynput.mouse import Listener
@@ -17,42 +17,55 @@ class OptionsMenu(QFrame):
         self.listener = None
         self.initUI()
         self.load_settings()
-    
+
     def initUI(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 10, 10, 10)
 
-        self.setWindowTitle("RustOracle")
         self.setGeometry(200, 200, 300, 200)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 
-        button_stylesheet = """
-    QPushButton {
-        background-color: #ff5555;
-        color: #FFFFFF;
-        border: none;
+        checkbox_stylesheet = """
+    QCheckBox {
+        background-color: #444444;
+        color: white;
+        border: 1px solid #ff5555;
         border-radius: 5px;
-        padding: 8px;
-        min-width: 100px;
+        padding: 8.5px;
+        font-size: 14px;
     }
-    QPushButton:hover {
-        background-color: #e34f4f;
+    QCheckBox::indicator {
+        width: 20px;
+        height: 20px;
+        background-color: #444444;
+        border: 1px solid #ff5555;
+        border-radius: 4px;
+    }
+    QCheckBox::indicator:checked {
+        background-color: red;
+    }
+    QCheckBox:hover {
+        background-color: #ff5555;
+        color: #2b2b2b;
     }
 """
 
-        red_button_stylesheet = """
-    QPushButton {
-        background-color: #ff5555;
-        color: #FFFFFF;
-        border: none;
-        border-radius: 5px;
-        padding: 8px;
-        min-width: 100px;
-    }
-    QPushButton:hover {
-        background-color: #e34f4f;
-    }
-"""
+
+        button_stylesheet = """
+            QPushButton {
+                background-color: #444444;
+                color: white;
+                border: 1px solid #ff5555;
+                border-radius: 5px;
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #ff5555;
+                color: #2b2b2b;
+            }
+        """
 
         darker_button_stylesheet = """
             QPushButton {
@@ -64,16 +77,16 @@ class OptionsMenu(QFrame):
                 min-width: 100px;
             }
             QPushButton:hover {
-                background-color: #bf0d0d;
+                background-color: #8B0000;
             }
         """
         
         self.config_save_button = QPushButton("Config Save")
         self.config_save_button.clicked.connect(self.save_settings)
-        self.config_save_button.setStyleSheet(darker_button_stylesheet)  # Use the new darker button stylesheet
+        self.config_save_button.setStyleSheet(darker_button_stylesheet)
         layout.addWidget(self.config_save_button)
 
-        settings_group = QGroupBox(" ")
+        settings_group = QGroupBox("(˵ ͡° ͜ʖ ͡°˵)")
         settings_layout = QVBoxLayout()
 
         diameter_label = QLabel("Change the diameter of the crosshair in pixels:")
@@ -103,13 +116,13 @@ class OptionsMenu(QFrame):
         button_layout = QHBoxLayout()
         self.apply_button = QPushButton("Apply")
         self.apply_button.clicked.connect(self.apply_changes)
-        self.apply_button.setStyleSheet(button_stylesheet)  # Use the default button stylesheet
+        self.apply_button.setStyleSheet(button_stylesheet)
         button_layout.addWidget(self.apply_button)
 
-        self.config_save_button = QPushButton("Hide crosshair on R-click")
-        self.config_save_button.clicked.connect(self.toggle_right_button_functionality)
-        self.config_save_button.setStyleSheet(red_button_stylesheet)  # Use red-button stylesheet
-        button_layout.addWidget(self.config_save_button)
+        self.hide_crosshair_checkbox = QCheckBox("Hide crosshair on R-click")
+        self.hide_crosshair_checkbox.clicked.connect(self.toggle_right_button_functionality)
+        self.hide_crosshair_checkbox.setStyleSheet(checkbox_stylesheet)
+        button_layout.addWidget(self.hide_crosshair_checkbox)
 
         layout.addLayout(button_layout)
         self.setLayout(layout)
@@ -119,22 +132,22 @@ class OptionsMenu(QFrame):
                 border: 1px solid #ff5555;
                 background: #444444;
                 height: 8px;
-                border-radius: 4px;
+                width 90%;
             }
-            
+
             QSlider::handle:horizontal {
                 background: #ff5555;
                 border: 1px solid #ff5555;
                 width: 16px;
                 height: 16px;
                 margin: -4px 0;
-                border-radius: 8px;
+                border-radius: 2px;
             }
         """)
 
         self.setStyleSheet(
             """
-            QDialog {
+            QDialog, QGroupBox {
                 background-color: #2b2b2b;
                 color: white;
                 font-size: 14px;
@@ -142,15 +155,14 @@ class OptionsMenu(QFrame):
             QLabel {
                 color: #ff5555;
             }
-            QComboBox, QPushButton, QLineEdit {
+            QComboBox, QPushButton, QLineEdit, QCheckBox {
                 background-color: #444444;
                 color: white;
                 border: 1px solid #ff5555;
-                border-radius: 5px;
                 padding: 10px;
                 font-size: 14px;
             }
-            QComboBox:hover, QPushButton:hover {
+            QComboBox:hover, QPushButton:hover, QCheckBox:hover {
                 background-color: #ff5555;
                 color: #2b2b2b;
             }
@@ -162,6 +174,7 @@ class OptionsMenu(QFrame):
             }
             """
         )
+
         
 
     def save_settings(self):

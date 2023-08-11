@@ -12,10 +12,10 @@ class CrosshairApp(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.diameter = 0
+        self.diameter = 15
         self.alpha = 1
         self.initUI()
-        self.crosshair_color = QColor(Qt.white)
+        self.crosshair_color = QColor(Qt.green)
         self.crosshair_shape = "cross"
         self.is_outline_border = False
 
@@ -32,16 +32,13 @@ class CrosshairApp(QMainWindow):
         screen_center_x = screen_geometry.x() + screen_geometry.width() // 2
         screen_center_y = screen_geometry.y() + screen_geometry.height() // 2
 
-        # Calculate the adjusted center based on the taskbar height
-        taskbar_height = QApplication.desktop().screenGeometry().height() - screen_geometry.height()
         title_bar_height = self.frameGeometry().height() - self.geometry().height()
-        adjusted_center_y = screen_center_y - (title_bar_height + taskbar_height) // 2
 
         self.window_width = self.geometry().width()
         self.window_height = self.geometry().height()
 
         self.new_window_x = screen_center_x - self.window_width // 2
-        self.new_window_y = adjusted_center_y - self.window_height // 2
+        self.new_window_y = screen_center_y - self.window_height // 2 - title_bar_height // 2
 
     def paintEvent(self, event):
         painter = QPainter(self)

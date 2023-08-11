@@ -15,16 +15,19 @@ class MainMenu(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("RustOracle")
         self.setGeometry(100, 100, 800, 600)
         self.setFixedSize(400, 500)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowMinMaxButtonsHint | Qt.WindowStaysOnTopHint)  # Set stay on top
         self.title_bar = TitleBar(self) 
         self.setMenuWidget(self.title_bar)
         tab_widget = QTabWidget()
         self.setCentralWidget(tab_widget)
 
-        # Apply dynamic stylesheet to the tab widget and its contents
         dynamic_stylesheet = """
+            QMainWindow {
+                background-color: #2E2E2E;
+                border-radius: 10px;
+            }
             QTabWidget::pane {
                 background-color: #2E2E2E;
                 border-radius: 10px;
@@ -33,9 +36,9 @@ class MainMenu(QMainWindow):
                 flex: 1;
                 background-color: #2E2E2E;
                 border-radius: 10px;
+                alignment: center;
             }
             QTabBar::tab {
-                flex: 1;
                 background-color: #3E3E3E;
                 color: white;
                 padding: 8px;
@@ -44,7 +47,7 @@ class MainMenu(QMainWindow):
                 background-color: red;
             }
         """
-        tab_widget.setStyleSheet(dynamic_stylesheet)
+        self.setStyleSheet(dynamic_stylesheet)
 
         advanced_options_menu = AdvancedOptionsDialog(self.crosshair)
         calculator_menu = CalculatorDialog(self)
@@ -53,7 +56,6 @@ class MainMenu(QMainWindow):
         tab_widget.addTab(options_menu, "Options Menu")
         tab_widget.addTab(advanced_options_menu, "Advanced Options")
         tab_widget.addTab(calculator_menu, "Calculator")
-
 
 def main():
     app = QApplication(sys.argv)
