@@ -16,50 +16,37 @@ class CalculatorDialog(QDialog):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
 
-        self.setStyleSheet('''
-            QDialog {
-                background-color: #1f2630; /* Dark Rust Blue */
-            }
-            QLabel {
-                font-size: 18px;
-                color: #ffffff; /* White */
-            }
-            QComboBox, QLineEdit {
-                font-size: 18px;
-                color: #000000; /* Black */
-                background-color: #ecf0f1; /* Light Grey */
-                border: 1px solid #34495e; /* Darker Rust Blue */
-                border-radius: 5px;
-                padding: 10px; /* Increased padding for a more spacious look */
-                selection-background-color: #2980b9; /* Selected text background color */
-            }
-            QComboBox::down-arrow, QComboBox::up-arrow {
-                image: none; /* Remove default arrows */
-            }
-            QComboBox::drop-down {
-                subcontrol-origin: padding;
-                subcontrol-position: top right;
-                width: 20px; /* Set the width of the drop-down arrow area */
-                border-left-width: 0px;
-            }
-            QComboBox::drop-down:hover {
-                background-color: #bdc3c7; /* Hover color for the drop-down area */
-            }
-            QPushButton {
-                font-size: 18px;
-                color: #ffffff; /* White */
-                background-color: #e74c3c; /* Rust Red */
-                border: 2px solid #c0392b; /* Slightly Darker Rust Red */
-                border-radius: 8px;
-                padding: 10px;
-            }
-            QPushButton:hover {
-                background-color: #c0392b; /* Slightly Darker Rust Red */
-            }
-            QFrame {
-                color: #b2b2b2; /* Lighter Grey */
-            }
-        ''')
+        self.setStyleSheet(
+    """
+    QDialog {
+        background-color: #2b2b2b;
+        color: white;
+        font-size: 14px;
+    }
+    QLabel {
+        color: #ff5555;
+    }
+    QComboBox, QPushButton {
+        background-color: #444444;
+        color: white;
+        border: 1px solid #ff5555;
+        border-radius: 5px;
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+    }
+    QComboBox:hover, QPushButton:hover {
+        background-color: #ff5555;
+        color: #2b2b2b;
+    }
+    QComboBox QAbstractItemView {
+        border: 1px solid #ff5555;
+        background-color: #444444;
+        color: white;
+        selection-background-color: #ff5555;
+    }
+    """
+)
 
         grid_layout = QGridLayout()
         grid_layout.setVerticalSpacing(10)

@@ -42,9 +42,9 @@ class AdvancedOptionsDialog(QDialog):
         self.setStyleSheet(
             """
             QDialog {
-                background-color: #2b2b2b;
-                color: white;
-                font-size: 14px;
+            background-color: #2b2b2b;
+            color: white;
+            font-size: 14px;
             }
             QLabel {
                 color: #ff5555;

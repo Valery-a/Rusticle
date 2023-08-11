@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QSlider, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame
+from PyQt5.QtWidgets import QSlider, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame, QGroupBox
 from PyQt5.QtCore import Qt, QPoint
 import platform
 from pynput.mouse import Listener
@@ -13,53 +13,74 @@ class OptionsMenu(QFrame):
     def __init__(self, crosshair):
         super().__init__()
         self.crosshair = crosshair
-        self.is_night_theme = False
         self.right_button_enabled = False
         self.listener = None
         self.initUI()
         self.load_settings()
     
-    
     def initUI(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(2, 2, 2, 2)
+        layout.setContentsMargins(10, 10, 10, 10)
 
         self.setWindowTitle("RustOracle")
         self.setGeometry(200, 200, 300, 200)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
 
+        button_stylesheet = """
+    QPushButton {
+        background-color: #ff5555;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 5px;
+        padding: 8px;
+        min-width: 100px;
+    }
+    QPushButton:hover {
+        background-color: #e34f4f;
+    }
+"""
+
+        red_button_stylesheet = """
+    QPushButton {
+        background-color: #ff5555;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 5px;
+        padding: 8px;
+        min-width: 100px;
+    }
+    QPushButton:hover {
+        background-color: #e34f4f;
+    }
+"""
+
+        darker_button_stylesheet = """
+            QPushButton {
+                background-color: #de0d0d;
+                color: #FFFFFF;
+                border: none;
+                border-radius: 5px;
+                padding: 8px;
+                min-width: 100px;
+            }
+            QPushButton:hover {
+                background-color: #bf0d0d;
+            }
+        """
+        
         self.config_save_button = QPushButton("Config Save")
         self.config_save_button.clicked.connect(self.save_settings)
-        self.config_save_button.setStyleSheet(
-            "QPushButton { background-color: #FF9900; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #FF6600; }"
-        )
+        self.config_save_button.setStyleSheet(darker_button_stylesheet)  # Use the new darker button stylesheet
         layout.addWidget(self.config_save_button)
 
-        self.apply_button = QPushButton("Apply")
-        self.apply_button.clicked.connect(self.apply_changes)
-        self.apply_button.setStyleSheet(
-            "QPushButton { background-color: #FFA500; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 50px; } QPushButton:hover { background-color: #FF6600; }"
-        )
-
-        self.night_day_button = QPushButton("Night")
-        self.night_day_button.clicked.connect(self.toggle_night_day_theme)
-        self.night_day_button.setStyleSheet(
-            "QPushButton { background-color: #808f86; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 80px; } QPushButton:hover { background-color: #707d75; }"
-        )
+        settings_group = QGroupBox(" ")
+        settings_layout = QVBoxLayout()
 
         diameter_label = QLabel("Change the diameter of the crosshair in pixels:")
         self.diameter_input = QLineEdit(str(0))
-        self.diameter_input.setStyleSheet(
-            "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; background: #a5aad9; border-radius: 5px; padding: 5px; }"
-        )
 
         vertical_adjust_label = QLabel("Adjust the crosshair position in pixels")
         self.vertical_adjust_input = QLineEdit(str(0))
-        self.vertical_adjust_input.setStyleSheet(
-            "QLineEdit { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; background: #a5aad9; border-radius: 5px; padding: 5px; }"
-        )
-        layout.addWidget(vertical_adjust_label)
-        layout.addWidget(self.vertical_adjust_input)
 
         alpha_label = QLabel("Adjust the transparency of the crosshair: (0 to 1)")
         self.alpha_slider = QSlider(Qt.Horizontal)
@@ -67,50 +88,81 @@ class OptionsMenu(QFrame):
         self.alpha_slider.setMaximum(100)
         self.alpha_slider.setValue(int(self.crosshair.alpha * 100))
         self.alpha_slider.valueChanged.connect(self.update_alpha)
-        self.alpha_slider.setStyleSheet(
-            "QSlider::groove:horizontal { height: 6px; background: #ccc; border-radius: 3px; } QSlider::handle:horizontal { width: 16px; height: 16px; margin: -5px 0; background: #a5aad9; border: 2px solid #a5aad9; border-radius: 8px; }"
-        )
+
+        settings_layout.addWidget(diameter_label)
+        settings_layout.addWidget(self.diameter_input)
+        settings_layout.addWidget(vertical_adjust_label)
+        settings_layout.addWidget(self.vertical_adjust_input)
+        settings_layout.addWidget(alpha_label)
+        settings_layout.addWidget(self.alpha_slider)
+        settings_layout.addStretch()
+
+        settings_group.setLayout(settings_layout)
+        layout.addWidget(settings_group)
+
+        button_layout = QHBoxLayout()
+        self.apply_button = QPushButton("Apply")
+        self.apply_button.clicked.connect(self.apply_changes)
+        self.apply_button.setStyleSheet(button_stylesheet)  # Use the default button stylesheet
+        button_layout.addWidget(self.apply_button)
 
         self.config_save_button = QPushButton("Hide crosshair on R-click")
         self.config_save_button.clicked.connect(self.toggle_right_button_functionality)
-        self.config_save_button.setStyleSheet(
-            "QPushButton { background-color: #ffaa00; color: #000000; border: none; border-radius: 5px; padding: 8px; min-width: 100px; } QPushButton:hover { background-color: #cc8800; }"
-        )
-
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.night_day_button)
-        button_layout.addWidget(self.apply_button)
+        self.config_save_button.setStyleSheet(red_button_stylesheet)  # Use red-button stylesheet
+        button_layout.addWidget(self.config_save_button)
 
         layout.addLayout(button_layout)
-        layout.addWidget(diameter_label)
-        layout.addWidget(self.diameter_input)
-        layout.addWidget(vertical_adjust_label)
-        layout.addWidget(self.vertical_adjust_input)
-        layout.addWidget(alpha_label)
-        layout.addWidget(self.alpha_slider)
-        layout.addWidget(self.config_save_button)
-        layout.addStretch()
-
         self.setLayout(layout)
-        
+
+        self.alpha_slider.setStyleSheet("""
+            QSlider::groove:horizontal {
+                border: 1px solid #ff5555;
+                background: #444444;
+                height: 8px;
+                border-radius: 4px;
+            }
+            
+            QSlider::handle:horizontal {
+                background: #ff5555;
+                border: 1px solid #ff5555;
+                width: 16px;
+                height: 16px;
+                margin: -4px 0;
+                border-radius: 8px;
+            }
+        """)
+
         self.setStyleSheet(
             """
-            OptionsMenu {
-                background-color: #f5f5f5;
-                border-radius: 10px;
+            QDialog {
+                background-color: #2b2b2b;
+                color: white;
+                font-size: 14px;
             }
-            QLabel, QLineEdit {
-                color: #333;
-                border-radius: 10px;
+            QLabel {
+                color: #ff5555;
             }
-            QPushButton {
-                background-color: #007BFF;
-                color: #fff;
+            QComboBox, QPushButton, QLineEdit {
+                background-color: #444444;
+                color: white;
+                border: 1px solid #ff5555;
+                border-radius: 5px;
+                padding: 10px;
+                font-size: 14px;
+            }
+            QComboBox:hover, QPushButton:hover {
+                background-color: #ff5555;
+                color: #2b2b2b;
+            }
+            QComboBox QAbstractItemView {
+                border: 1px solid #ff5555;
+                background-color: #444444;
+                color: white;
+                selection-background-color: #ff5555;
             }
             """
         )
         
-        self.set_night_theme()
 
     def save_settings(self):
         settings = {
@@ -119,7 +171,6 @@ class OptionsMenu(QFrame):
             "crosshair_color": self.crosshair.crosshair_color.name(),
             "crosshair_shape": self.crosshair.crosshair_shape,
             "is_outline_border": self.crosshair.is_outline_border,
-            "night_theme": self.is_night_theme, 
             "vertical_adjust_input": int(self.vertical_adjust_input.text()),
         }
 
@@ -149,12 +200,6 @@ class OptionsMenu(QFrame):
                                        self.crosshair.window_width, self.crosshair.window_height)
             self.crosshair.repaint()
 
-            self.is_night_theme = settings.get("night_theme", False)
-            if self.is_night_theme:
-                self.set_night_theme()
-            else:
-                self.set_day_theme()
-
         except (FileNotFoundError, json.JSONDecodeError):
             pass
 
@@ -178,26 +223,6 @@ class OptionsMenu(QFrame):
         self.crosshair.alpha = value / 100.0
         self.crosshair.set_transparency(self.crosshair.alpha)
         self.crosshair.repaint()
-        
-    def toggle_night_day_theme(self):
-        if self.is_night_theme:
-            self.set_day_theme()
-        else:
-            self.set_night_theme()
-
-    def set_day_theme(self):
-        self.setStyleSheet(
-            "OptionsMenu { background-color: #f5f5f5; } QLabel, QLineEdit { color: #333; } QPushButton { background-color: #007BFF; color: #fff; }"
-        )
-        self.night_day_button.setText("Night")
-        self.is_night_theme = False
-
-    def set_night_theme(self):
-        self.setStyleSheet(
-            "OptionsMenu { background-color: #303030; } QLabel, QLineEdit { color: #f0f0f0; } QPushButton { background-color: #212121; color: #fff; }"
-        )
-        self.night_day_button.setText("Day")
-        self.is_night_theme = True
 
     def on_click_windows(self, x, y, button, pressed):
         if button == button.right and pressed and self.right_button_enabled:
