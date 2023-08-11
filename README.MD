@@ -20,6 +20,7 @@ The "Options Menu" tab allows you to configure various settings for the crosshai
 Make the desired changes and click the "Apply" button to see the updated crosshair. Click the "Config Save" button to save your settings.
 </details>
 
+<details>
 <summary>Advanced Options</summary>
 <br>
 In the "Advanced Options" tab, you can further customize the crosshair appearance:
@@ -31,6 +32,7 @@ Hex Color Code: Alternatively, you can enter a valid hex color code to set the c
 Click the "Apply" button to see the updated crosshair appearance.
 </details>
 
+<details>
 <summary>Calculator</summary>
 <br>
 The "Calculator" tab allows you to calculate the cost of raiding tools and wall information:
