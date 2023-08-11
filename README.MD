@@ -63,7 +63,7 @@ Since I'm heading up this project, I really appreciate your thoughts and suggest
 
 If you find this software useful and it has helped you, consider showing your appreciation by giving it a ⭐. While the software remains free for everyone, your support goes a long way in motivating me to continue refining and expanding its features.
 
-![⭐ Star the Repository](https://cdn.discordapp.com/attachments/1131944883804975388/1139553081479143564/2023-08-11_16-07-43.gif)
+![⭐ Star the Repository](https://cdn.discordapp.com/attachments/987441697774534707/1139556809615626320/2023-08-11_16-07-43_1.gif)
 
 By starring the repository, you let me know that my work is valued and that you'd like to see more of it. It's a simple gesture that means a lot and keeps me inspired.
 
