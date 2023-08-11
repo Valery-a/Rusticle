@@ -58,3 +58,18 @@ Whether you're seeking guidance or have innovative ideas to share, don't hesitat
 [🔗 Join the Discussion](https://github.com/Valery-a/Rusticle/discussions)
 
 Since I'm heading up this project, I really appreciate your thoughts and suggestions. They play a key role in shaping how this project grows. Feel free to share your insights!   (:
+
+## Show Your Support!
+
+If you find this software useful and it has helped you, consider showing your appreciation by giving it a star. While the software remains free for everyone, your support goes a long way in motivating me to continue refining and expanding its features.
+
+[⭐ Star the Repository](https://github.com/Valery-a/Rusticle)
+
+By starring the repository, you let me know that my work is valued and that you'd like to see more of it. It's a simple gesture that means a lot and keeps me inspired.
+
+## Acknowledgments
+
+- The data for the calculator has been sourced from [RustLabs](https://rustlabs.com/)
+
+- The banner image at the top was made by [Екатерина Чеснокова](https://twitter.com/DDAzotka2033)
+
