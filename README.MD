@@ -51,6 +51,13 @@ Closing the Application
 To close the application, simply click the close button (X) located at the top-right corner of the main window.
 </details>
 
+
+# Screenshot
+
+![](https://cdn.discordapp.com/attachments/1103536796119347300/1141567387842379858/image.png)
+
+
+
 ## Seeking Assistance or Offering Suggestions?
 
 Whether you're seeking guidance or have innovative ideas to share, don't hesitate to open a discussion.
