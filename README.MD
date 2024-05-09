@@ -54,8 +54,7 @@ To close the application, simply click the close button (X) located at the top-r
 
 # Screenshot
 
-![](https://cdn.discordapp.com/attachments/1103536796119347300/1141567387842379858/image.png)
-
+![Screenshot 1](src/resources/logo.png)
 
 
 ## Seeking Assistance or Offering Suggestions?
